@@ -40,12 +40,30 @@ namespace lark {
 
 class Lark {
 public:
+    // Return the unique ***lark*** instance.
     static Lark &Instance();
 
+    // Create a route named `name` which be one of the 26 routes "RouteA", "RouteB", ..., "RouteZ".
+    // The `cbs` is an optional argument. It is used when something need to be done
+    // on route started or on route stopped or on route exits.
+    // Note: DO NOT call route APIs(like route->SetParameter() etc.) in these callbacks,
+    // otherwise deadlock will be caused.
     virtual Route *NewRoute(const char *name, Route::Callbacks *cbs = nullptr) = 0;
+
+    // Manually delete a route.
+    // This is not a mandatory action when the route is not used
+    // since all the routes' resources are managered by the ***lark*** instance,
+    // and all of them will be deleted automatically when the ***lark*** instance is destroying.
     virtual void DeleteRoute(Route *route) = 0;
 
-    virtual FIFO *NewFIFO(unsigned int rate, size_t sampleSizeInBytes, samples_t bufSizeInSamples, samples_t delayInSamples = 0) = 0;
+    // Create a FIFO which can be used by two threads, one for writing data, one for reading data.
+    // As an example, please refer to [larkexample3.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample3.cpp).
+    virtual FIFO *NewFIFO(unsigned int rate, size_t sampleSizeInBytes,
+                samples_t bufSizeInSamples, samples_t delayInSamples = 0) = 0;
+
+    // Manually delete a fifo.
+    // This is not a mandatory action when the fifo is not used since all the fifos' resources are managered by the ***lark*** instance,
+    // and all of them will be deleted automatically when the ***lark*** instance is destroying.
     virtual void DeleteFIFO(FIFO *fifo) = 0;
 };
 

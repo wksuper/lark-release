@@ -1,8 +1,49 @@
 # User Manual
 
-## 1 Prebuilt Blocks
+## 1 class Lark
 
-### 1.1 BlkGain
+- Header file: <lark/lark.h>
+- Library: `liblark.so` or `liblark.dylib` or `liblark.dll`
+- Public APIs
+
+### 1.1 `static Lark &Instance();`
+
+Return the unique ***lark*** instance.
+
+### 1.2 `virtual Route *NewRoute(const char *name, Route::Callbacks *cbs = nullptr) = 0;`
+
+Create a route named `name` which be one of the 26 routes "RouteA", "RouteB", ..., "RouteZ".
+The `cbs` is an optional argument. It is used when something need to be done on route started or on route stopped or on route exits.
+Note: DO NOT call route APIs(like route->SetParameter() etc.) in these callbacks, otherwise deadlock will be caused.
+
+### 1.3 `virtual void DeleteRoute(Route *route) = 0;`
+
+Manually delete a route.
+This is not a mandatory action when the route is not used since all the routes' resources are managered by the ***lark*** instance,
+and all of them will be deleted automatically when the ***lark*** instance is destroying.
+
+### 1.4 `virtual FIFO *NewFIFO(unsigned int rate, size_t sampleSizeInBytes, samples_t bufSizeInSamples, samples_t delayInSamples = 0) = 0;`
+
+Create a FIFO which can be used by two threads, one for writing data, one for reading data.
+As an example, please refer to [larkexample3.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample3.cpp).
+
+### 1.5 `virtual void DeleteFIFO(FIFO *fifo) = 0;`
+
+Manually delete a fifo.
+This is not a mandatory action when the fifo is not used since all the fifos' resources are managered by the ***lark*** instance,
+and all of them will be deleted automatically when the ***lark*** instance is destroying.
+
+## 2 class Route
+
+- Header file: <lark/Route.h>
+- Library: `liblark.so` or `liblark.dylib` or `liblark.dll`
+- Public APIs
+
+[TODO]
+
+## 3 Prebuilt Blocks
+
+### 3.1 BlkGain
 
 The BlkGain block is able to add gain on its input endpoints' data, and the gain takes effect immediately.
 Internally, the data from the input endpoint index N will go to the output endpoint with the same index N. i.e. I00 goes to O00, I01 goes to O01, and so on.
@@ -36,7 +77,7 @@ $ lkdb setparam RouteA blkgain_0 1 3 0.707 8 0.5
 - Pending by No Input?
   - Yes
 
-### 1.2 BlkMixer
+### 3.2 BlkMixer
 
 The BlkMixer block is able to mix multiple input endpoints(mono per endpoint) into one mono output endpoint.
 The block also has the functionality of duplicating output.
@@ -56,7 +97,7 @@ So does the third, fourth, etc. output endpoint.
 - Pending by No Input?
   - Yes
 
-### 1.3 BlkInterleave
+### 3.3 BlkInterleave
 
 The BlkInterleave block is able to merge multiple input endpoints(mono per endpoint) into one interleaved output endpoint.
 
@@ -71,7 +112,7 @@ The BlkInterleave block is able to merge multiple input endpoints(mono per endpo
 - Pending by No Input?
   - Yes
 
-### 1.4 BlkDeinterleave
+### 3.4 BlkDeinterleave
 
 The BlkDeinterleave block is able to split one interleaved input endpoint into multiple mono output endpoints.
 
@@ -86,7 +127,7 @@ The BlkDeinterleave block is able to split one interleaved input endpoint into m
 - Pending by No Input?
   - Yes
 
-### 1.5 BlkDelay
+### 3.5 BlkDelay
 
 The BlkDelay block is able to add delay between the input endpoints and the output endpoints.
 
@@ -102,13 +143,13 @@ The BlkDelay block is able to add delay between the input endpoints and the outp
 - Pending by No Input?
   - Yes
 
-### 1.6 BlkBuffer
+### 3.6 BlkBuffer
 
 The BlkBuffer block is able to buffer amount of data coming from the unique input endpoint.
 When the buffer is full, the oldest sample will be overwritten.
 To read the buffered data, use the `Exchange` API with `id_t id` to be 0, `void *data` to be a pointer to
 
-```
+```c++
 struct BlkBufferExchangeData {
     // [out] *buf is the output data
     void *buf;
@@ -120,6 +161,7 @@ struct BlkBufferExchangeData {
     int64_t timestamp;
 };
 ```
+
 and `size_t size` to be `sizeof(BlkBufferExchangeData)`.
 
 - SO Name
@@ -133,7 +175,7 @@ and `size_t size` to be `sizeof(BlkBufferExchangeData)`.
 - Pending by No Input?
   - Yes
 
-### 1.7 BlkStreamIn
+### 3.7 BlkStreamIn
 
 The BlkStreamIn block is able to pull data from route outside via DataProducer passed to it when creation.
 It must have to be a 'first' block in a route.
@@ -149,7 +191,7 @@ It must have to be a 'first' block in a route.
 - Pending by No Input?
   - No
 
-### 1.8 BlkStreamOut
+### 3.8 BlkStreamOut
 
 The BlkStreamOut block is able to push data to route outside via DataConsumer passed to it when creation.
 It must have to be a 'last' block in a route.
@@ -165,7 +207,7 @@ It must have to be a 'last' block in a route.
 - Pending by No Input?
   - Yes
 
-### 1.9 BlkAlsaPlayback
+### 3.9 BlkAlsaPlayback
 
 The BlkAlsaPlayback block is able to write interleaved data from the input endpoint to ALSA lib.
 The RATE, FORMAT, CHNUM are decided by the input endpoint when it is linked.
@@ -182,7 +224,7 @@ BlkAlsaPlayback can accept output endpoints to duplicate the data(with timestamp
 - Pending by No Input?
   - Yes
 
-### 1.10 BlkAlsaCapture
+### 3.10 BlkAlsaCapture
 
 The BlkAlsaCapture block is able to read interleaved data from ALSA lib to its output endpoint.
 It should be a 'first' block in a route.
@@ -200,7 +242,7 @@ This block depends on `libasound.so`.
 - Pending by No Input?
   - N/A
 
-### 1.11 BlkFileReader
+### 3.11 BlkFileReader
 
 The BlkFileReader block is able to read interleaved data from the PCM audio file and output to its output endpoints(one channel per endpoint).
 It should be a 'first' block in a route.
@@ -216,7 +258,7 @@ It should be a 'first' block in a route.
 - Pending by No Input?
   - N/A
 
-### 1.12 BlkFileWriter
+### 3.12 BlkFileWriter
 
 The BlkFileWriter block is able to write the multi-channel data from its input endpoints(one channel per endpoint) into a PCM file.
 It should be a 'last' block in a route.
@@ -232,7 +274,7 @@ It should be a 'last' block in a route.
 - Pending by No Input?
   - Yes
 
-### 1.13 BlkPassthrough
+### 3.13 BlkPassthrough
 
 The BlkPassthrough block bypass its input endpoints to its output endpoints without any change.
 The data from the input endpoint index N will go to the output endpoint with the same index N. i.e. I00 goes to O00, I01 goes to O01, and so on.
@@ -248,7 +290,7 @@ The data from the input endpoint index N will go to the output endpoint with the
 - Pending by No Input?
   - Yes
 
-### 1.14 BlkSpeexResampler
+### 3.14 BlkSpeexResampler
 
 The BlkSpeexResampler block resample its input endpoints(one channel per endpoint) to its output endpoints(one channel per endpoint).
 All the input endpoints should be at the same sampling rate. The input rate is decided by its link linked.
@@ -266,7 +308,7 @@ This block depends on `libspeexdsp.so`.
 - Pending by No Input?
   - Yes
 
-### 1.15 BlkSpeexPreprocessor
+### 3.15 BlkSpeexPreprocessor
 
 The BlkSpeexPreprocessor block performs echo cancelation and denoise on its microphone input endpoints.
 Input endpoint index 0 to 15 represent the microphone channels(one channel per endpoint).
@@ -285,7 +327,7 @@ This block depends on `libspeexdsp.so`.
 - Pending by No Input?
   - Yes
 
-### 1.16 BlkAlign
+### 3.16 BlkAlign
 
 The BlkAlign block is able to align the microphone input endpoint(mono or interleaved multi-channel) with the echo-reference input endpoint(mono or interleaved multi-channel) via their timestamps.
 The microphone input endpoint must be fixed to index 0. The echo-reference input endpoint must be fixed to index 1.
@@ -303,7 +345,7 @@ Most of AEC algorithms require the echo-reference signal arrives ahead of the mi
 - Pending by No Input?
   - Yes
 
-### 1.17 BlkFormatAdapter
+### 3.17 BlkFormatAdapter
 
 The BlkFormatAdapter block is able to convert the input endpoint data from a format to another format sent to the output endpoint.
 Internally, the data from the input endpoint index N will go to the output endpoint with the same index N. i.e. I00 goes to O00, I01 goes to O01, and so on.
@@ -319,7 +361,7 @@ Internally, the data from the input endpoint index N will go to the output endpo
 - Pending by No Input?
   - Yes
 
-### 1.18 BlkSoundTouch
+### 3.18 BlkSoundTouch
 
 The BlkSoundTouch block is able to increase/decrease sound pitch, speed-up/slow-down sound tempo, and speed-up/slow-down sound rate.
 It only accept 1 input endpoint with mono or interleaved float channel and 1 output endpoint with mono or interleaved float channel.
@@ -344,9 +386,9 @@ This block depends on `libSoundTouch.so`.
 - Pending by No Input?
   - Yes
 
-## 2 Build Your Own Block
+## 4 Build Your Own Block
 
-### 2.1 Write Your Block Source Code
+### 4.1 Write Your Block Source Code
 
 Customizable blocks are very easy to be created by following below five steps.
 
@@ -381,7 +423,7 @@ extern "C" lark::Block *CreateBlock(bool first, bool last, const lark::Parameter
 }
 ```
 
-### 2.2 Compile It into SO Library
+### 4.2 Compile It into SO Library
 
 When linking, don't forget to link liblark.so.  e.g.
 
@@ -389,13 +431,13 @@ When linking, don't forget to link liblark.so.  e.g.
 $ g++ MyBlock.cpp -fPIC -shared -llark -o libmyblock.so
 ```
 
-### 2.3 Install Your Library
+### 4.3 Install Your Library
 
 ```bash
 $ sudo install libmyblock.so /usr/local/lib/
 ```
 
-### 2.4 Create Your Block in The Route
+### 4.4 Create Your Block in The Route
 
 c++:
 
@@ -409,66 +451,66 @@ shell:
 $ lkdb newblock RouteX libmyblock.so ...
 ```
 
-## 3 Members of The Base Class lark::Block
+## 5 Members of The Base Class lark::Block
 
 When deriving from the base class lark::Block, its public and protected members are able to be accessed. And all the virtual functions can be overridden.
 
-### 3.1 `bool ActiveOutEpsDataIsEmpty() const;`
+### 5.1 `bool ActiveOutEpsDataIsEmpty() const;`
 
 As said by the function name, this function returns true if any one of the active output endpoints' data is empty, and false on otherwise. It often helps to check whether the output data has been fetched by the next block(s) or not when `ProcessFrame()` is called.
 
-### 3.2 `bool ActiveInEpsDataIsReady() const;`
+### 5.2 `bool ActiveInEpsDataIsReady() const;`
 
 As said by the function name, this function returns true if all the active input endpoints' data is ready, and false on otherwise. It often helps to check if the input data is ready or not when `ProcessFrame()` is called.
 
-### 3.3 `void ClearActiveInEpsData();`
+### 5.3 `void ClearActiveInEpsData();`
 
 As said by the function name, this function makes all the input endpoints' data empty.
 
-### 3.4 `const InputEndpoint &InEp(size_t idx) const;`
+### 5.4 `InputEndpoint &InEp(size_t idx);`
 
 Returns the InputEndpoint instance with index 'idx'.
 
-### 3.5 `const OutputEndpoint &OutEp(size_t idx) const;`
+### 5.5 `OutputEndpoint &OutEp(size_t idx);`
 
 Returns the OutputEndpoint instance with index 'idx'.
 
-### 3.6 `const std::map<size_t, InputEndpoint*> &ActiveInEps() const;`
+### 5.6 `const std::map<size_t, InputEndpoint*> &ActiveInEps() const;`
 
 Returns the active input endpoints.
 'map.first' is the input endpoint index, 'map.second' is the input endpoint pointer.
 
-### 3.7 `const std::map<size_t, OutputEndpoint*> &ActiveOutEps() const;`
+### 5.7 `const std::map<size_t, OutputEndpoint*> &ActiveOutEps() const;`
 
 Returns the active output endpoints.
 'map.first' is the output endpoint index, 'map.second' is the output endpoint pointer.
 
-### 3.8 `virtual int OnInEpLinked(size_t epIdx);`
+### 5.8 `virtual int OnInEpLinked(size_t epIdx);`
 
 When the input endpoint 'epIdx' is linked, this function will be called, and returns lark::ErrorType.
 It can be overridden.
 
-### 3.9 `virtual void OnInEpUnlinked(size_t epIdx);`
+### 5.9 `virtual void OnInEpUnlinked(size_t epIdx);`
 
 When the input endpoint 'epIdx' is unlinked, this function will be called.
 It can be overridden.
 
-### 3.10 `virtual int OnOutEpLinked(size_t epIdx);`
+### 5.10 `virtual int OnOutEpLinked(size_t epIdx);`
 
 When the output endpoint 'epIdx' is linked, this function will be called, and returns lark::ErrorType.
 It can be overridden.
 
-### 3.11 `virtual void OnOutEpUnlinked(size_t epIdx);`
+### 5.11 `virtual void OnOutEpUnlinked(size_t epIdx);`
 
 When the output endpoint 'epIdx' is unlinked, this function will be called.
 It can be overridden.
 
-### 3.12 `virtual int Start();`
+### 5.12 `virtual int Start();`
 
 When the route this block belongs to is starting, this function will be called, and returns lark::ErrorType.
 It can be overridden.
 
-### 3.13 `virtual samples_t ProcessFrame() = 0;`
+### 5.13 `virtual samples_t ProcessFrame() = 0;`
 
 After the route this block belongs to started, this ProcessFrame() function could be called at any time.
 It must be overridden.
@@ -476,32 +518,32 @@ In this function, ActiveInEps() is the input data and ActiveOutEps() is the outp
 Important: After processing, don't forget to update FB().availSampleNum in ActiveInEps()'s InputEndpoint and ActiveOutEps()'s OutputEndpoint respectively.
 Return the actual processed sample number on success or a negative lark::ErrorType value on failure.
 
-### 3.14 `virtual int Stop();`
+### 5.14 `virtual int Stop();`
 
 When the route this block belongs to is stopping, this function will be called, and returns lark::ErrorType.
 It can be overridden.
 
-### 3.15 `virtual int SetParameter(id_t paramId, const Parameters &params);`
+### 5.15 `virtual int SetParameter(id_t paramId, const Parameters &params);`
 
 This function can pass parameters from outside at any time, and returns lark::ErrorType.
 paramId: the parameter ID defined by this block
 params: the parameters associated with paramId defined by this block
 It can be overridden.
 
-### 3.16 `virtual int GetParameter(id_t paramId, Parameters &params);`
+### 5.16 `virtual int GetParameter(id_t paramId, Parameters &params);`
 
 This function can pass parameters to outside at any time, and returns lark::ErrorType.
 paramId: the parameter ID defined by this block
 params: the parameters associated with paramId defined by this block
 It can be overridden.
 
-### 3.17 `virtual void Reset();`
+### 5.17 `virtual void Reset();`
 
 This function resets the block internal state.
 It could be called when the route encounters an error frame.
 It can be overridden.
 
-### 3.18 `virtual size_t Delay() const;`
+### 5.18 `virtual size_t Delay() const;`
 
 This function returns the delay(in micro-secondond) from the input endpoint(s) to the output endpoint(s).
 It could be called at any time.
