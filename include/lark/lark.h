@@ -65,6 +65,8 @@ public:
     // This is not a mandatory action when the fifo is not used since all the fifos' resources are managered by the ***lark*** instance,
     // and all of them will be deleted automatically when the ***lark*** instance is destroying.
     virtual void DeleteFIFO(FIFO *fifo) = 0;
+
+    virtual ~Lark();
 };
 
 }

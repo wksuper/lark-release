@@ -41,6 +41,8 @@ class Link;
 
 class Route {
 public:
+    virtual ~Route();
+
     virtual Block* NewBlock(const char *soFileName, bool first, bool last, const Parameters &args=Parameters()) = 0;
 
     virtual Link* NewLink(unsigned int rate, SampleFormat format, unsigned int chNum, samples_t frameSizeInSamples,
@@ -140,6 +142,8 @@ public:
         virtual void OnStarted(Route *route);
         virtual void OnStopped(Route *route);
         virtual void OnExit(Route *route);
+
+        virtual ~Callbacks();
     };
 };
 

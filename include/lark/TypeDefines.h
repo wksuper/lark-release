@@ -124,6 +124,7 @@ public:
     {
         m_blocking = blocking;
     }
+    virtual ~DataProducer() {}
 
 private:
     virtual int Produce(void *data, samples_t samples, bool blocking, int64_t *timestamp) = 0;
@@ -142,6 +143,8 @@ public:
         m_blocking = blocking;
     }
 
+    virtual ~DataConsumer() {}
+
 private:
     virtual int Consume(const void *data, samples_t samples, bool blocking, int64_t timestamp) = 0;
     bool m_blocking;
@@ -150,6 +153,7 @@ private:
 class FIFO : public DataProducer, public DataConsumer {
 public:
     virtual void Shutdown() = 0;
+    virtual ~FIFO() {}
 };
 
 }

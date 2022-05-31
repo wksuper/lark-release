@@ -61,6 +61,15 @@ private:
 
 int MyDsp::SetupRoutes()
 {
+    lark::FIFO *fifo = lark::Lark::Instance().NewFIFO(
+                                playbackRate,
+                                lark::SamplesToBytes(format, chNum, 1),
+                                playbackFrameSizeInSamples * 4);
+    if (!fifo) {
+        KLOGE("Failed to new a FIFO");
+        return -1;
+    }
+
     // 1. Create the capture route named RouteB
     m_captureRoute = lark::Lark::Instance().NewRoute("RouteB");
     if (!m_captureRoute) {
@@ -69,10 +78,6 @@ int MyDsp::SetupRoutes()
     }
 
     // 2. Create RouteB's blocks
-    lark::FIFO *fifo = lark::Lark::Instance().NewFIFO(
-                                playbackRate,
-                                lark::SamplesToBytes(format, chNum, 1),
-                                playbackFrameSizeInSamples * 4);
     const char *soFileName = "libblkstreamin.so";
     lark::Parameters args;
     args.push_back(std::to_string(playbackRate));

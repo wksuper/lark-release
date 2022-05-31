@@ -2,8 +2,8 @@
 
 [English](https://gitee.com/wksuper/lark-release/blob/master/README.md) | [简体中文](https://gitee.com/wksuper/lark-release/blob/master/README-cn.md)
 
-***lark***是一个轻量级但功能强大的软件音频DSP，作者是王揆。它提供了一种灵活可扩展的方法来设计高性能、低MCPS、低延时的音频路由。
-主要特性（至v0.2版本）：
+***lark***是一个轻量级但功能强大的软件音频DSP。它提供了一种灵活可扩展的方法来设计高性能、低MCPS、低延时的音频路由，让您可以像搭积木一样构建音频系统。
+主要特性（至v0.3版本）：
 
 - 支持实时操作音频路由
   - 实时加载/卸载块
@@ -12,7 +12,7 @@
   - 实时设定日志等级
   - 实时转储每个块的数据
 - 支持预编译的输入/输出块
-  - file-reader, file-writer, stream-in, stream-out, alsa-capture, alsa-playback, portaudio-playback
+  - file-reader, file-writer, stream-in, stream-out, alsa-capture, alsa-playback, tinyalsa-playback, tinyalsa-capture, portaudio-playback, portaudio-capture
 - 支持预编译的算法块
   - gain, mixer(duplicator), interleave, de-interleave, format-adapter, delay, align, buffer, speex-resampler, speex-preprocessor, soundtouch
 - 支持无限客制化块
@@ -24,7 +24,7 @@
 
 ## 开始
 
-***lark***是由一个基础的动态库`liblark.so`，各种可选的块（动态加载库）例如`libblkmixer.so`，和一个可选的可执行调试工具`lkdb`组成。基于 ***lark***，您可以容易地创建既您想实现的既可以简单又可以复杂的音频路由，实时启动/停止任意一个路由，或者实时设定/获取任意块的参数。
+***lark***是由一个基础的动态库`liblark.so`，各种可选的块（动态加载库）例如`libblkmixer.so`，和一个可选的可执行调试工具`lkdb`组成。基于 ***lark***，您可以很容易地创建您想实现的既可以简单又可以复杂的音频路由，实时启动/停止任意一个路由，或者实时设定/获取任意块的参数。
 
 ### 第1步
 
@@ -65,7 +65,7 @@ $ x86_64-linux-gnu/bin/larkexample1
 
 如果没错误的话，音乐文件应该开始播放了。
 
-这个例子的源代码在此：[larkexample1.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample1.cpp).
+这个例子的源代码在此：[larkexample1.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample1.cpp)。
 
 #### 例2：运行一个单路由，把两个音乐文件输入做带各自增益的混合播放
 
@@ -93,7 +93,7 @@ $ x86_64-linux-gnu/bin/larkexample2
 
 如果没错误的话，两个音乐文件应该开始混合播放输出了。
 
-这个例子的源代码在此：[larkexample2.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample2.cpp).
+这个例子的源代码在此：[larkexample2.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample2.cpp)。
 
 #### 例3：运行双路由，一个做音乐播放，一个采集麦克风以做关键词侦测
 
@@ -138,7 +138,7 @@ $ x86_64-linux-gnu/bin/larkexample3
 如果没错误的话，播放和录音应该同时开始了。
 录到的声音文件存放在`./cap-16000_16_1.pcm`。
 
-这个例子的源代码在此：[larkexample3.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample3.cpp).
+这个例子的源代码在此：[larkexample3.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample3.cpp)。
 
 #### 例5：运行一个单播放路由，嵌入了SoundTouch以做音调、节拍、播放速率的调节
 
@@ -184,7 +184,7 @@ $ lkdb setparam RouteA blksoundtouch_0 3 0.4    # 播放速率变慢
 $ lkdb setparam RouteA blksoundtouch_0 3 1.0    # 播放速率变正常
 ```
 
-这个例子的源代码在此：[larkexample5.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample5.cpp).
+这个例子的源代码在此：[larkexample5.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample5.cpp)。
 
 ## 用`lkdb`实时调试
 
@@ -285,7 +285,7 @@ $ lkdb delete RouteA !
 Deleted RouteA
 ```
 
-这个例子的源代码在此：[larkexample0.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample0.cpp).
+这个例子的源代码在此：[larkexample0.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample0.cpp)。
 
 ### 第3步
 
@@ -316,6 +316,14 @@ Deleted RouteA
 需要用到“多路由”的场景是，当多个输入放在一个路由里运行会有机会相互阻塞时，那么它们就应该被分离到多个路由。例如，一个输入alsacapture，一个输入是echo-reference。
 
 ## 版本历史
+
+### 0.3
+
+- 支持了更多的块
+  - BlkTinyAlsaPlayback BlkTinyAlsaCapture BlkFormatAdapter BlkPACapture
+- 增加了larkexample6
+  - 该例子能够实时播放麦克风录音，同时调节音调。用了两个路由来实现：
+  - RouteB(BlkPACapture->BlkMixer->BlkInterleave->BlkStreamOut)->FIFO->RouteA(BlkStreamIn->BlkDelay->BlkFormatAdapter->BlkSoundTouch->BlkPAPlayback)
 
 ### 0.2
 
