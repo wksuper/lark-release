@@ -55,22 +55,29 @@ int main()
     const char *soFileName = "libblkfilereader.so";
     lark::Parameters args;
     args.push_back("./examples/kanr-48000_16_2.pcm");
-    args.push_back(std::to_string(rate));
-    args.push_back(std::to_string(format));
-    args.push_back(std::to_string(chNum));
     lark::Block *blkFileReader0 = route->NewBlock(soFileName, true, false, args);
     if (!blkFileReader0) {
         KLOGE("Failed to new a block from %s", soFileName);
         return -1;
     }
+    soFileName = "libblkdeinterleave.so";
+    lark::Block *blkDeinterleave0 = route->NewBlock(soFileName, false, false);
+    if (!blkDeinterleave0) {
+        KLOGE("Failed to new a block from %s", soFileName);
+        return -1;
+    }
 
+    soFileName = "libblkfilereader.so";
     args.clear();
     args.push_back("./examples/pacificrim-48000_16_2.pcm");
-    args.push_back(std::to_string(rate));
-    args.push_back(std::to_string(format));
-    args.push_back(std::to_string(chNum));
     lark::Block *blkFileReader1 = route->NewBlock(soFileName,  true, false, args);
     if (!blkFileReader1) {
+        KLOGE("Failed to new a block from %s", soFileName);
+        return -1;
+    }
+    soFileName = "libblkdeinterleave.so";
+    lark::Block *blkDeinterleave1 = route->NewBlock(soFileName, false, false);
+    if (!blkDeinterleave1) {
         KLOGE("Failed to new a block from %s", soFileName);
         return -1;
     }
@@ -114,19 +121,27 @@ int main()
     }
 
     // 3. Create RouteA's links
-    if (!route->NewLink(rate, format, 1, frameSizeInSamples, blkFileReader0, 0, blkGain0, GAIN0_L_EPIDX)) {
+    if (!route->NewLink(rate, format, chNum, frameSizeInSamples, blkFileReader0, 0, blkDeinterleave0, 0)) {
         KLOGE("Failed to new a link");
         return -1;
     }
-    if (!route->NewLink(rate, format, 1, frameSizeInSamples, blkFileReader0, 1, blkGain0, GAIN0_R_EPIDX)) {
+    if (!route->NewLink(rate, format, 1, frameSizeInSamples, blkDeinterleave0, 0, blkGain0, GAIN0_L_EPIDX)) {
         KLOGE("Failed to new a link");
         return -1;
     }
-    if (!route->NewLink(rate, format, 1, frameSizeInSamples, blkFileReader1, 0, blkGain1, GAIN1_L_EPIDX)) {
+    if (!route->NewLink(rate, format, 1, frameSizeInSamples, blkDeinterleave0, 1, blkGain0, GAIN0_R_EPIDX)) {
         KLOGE("Failed to new a link");
         return -1;
     }
-    if (!route->NewLink(rate, format, 1, frameSizeInSamples, blkFileReader1, 1, blkGain1, GAIN1_R_EPIDX)) {
+    if (!route->NewLink(rate, format, chNum, frameSizeInSamples, blkFileReader1, 0, blkDeinterleave1, 1)) {
+        KLOGE("Failed to new a link");
+        return -1;
+    }
+    if (!route->NewLink(rate, format, 1, frameSizeInSamples, blkDeinterleave1, 0, blkGain1, GAIN1_L_EPIDX)) {
+        KLOGE("Failed to new a link");
+        return -1;
+    }
+    if (!route->NewLink(rate, format, 1, frameSizeInSamples, blkDeinterleave1, 1, blkGain1, GAIN1_R_EPIDX)) {
         KLOGE("Failed to new a link");
         return -1;
     }
@@ -165,7 +180,7 @@ int main()
         return -1;
     }
     while (1) {
-        KLOGI("Press 's' to stop, 'p' to play, 'q' to exit");
+        KLOGA("Press 's' to stop, 'p' to play, 'q' to exit");
 again:
         char c;
         if (scanf("%c", &c) != 1)

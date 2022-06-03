@@ -43,6 +43,7 @@ namespace lark {
 
 #define BLOCK_MAX_IN_EPS   (32)
 #define BLOCK_MAX_OUT_EPS  (32)
+#define BLKLOGF(fmt, args...) KLOGF("%s: %s: " fmt, Block::RouteName(), Block::Name(), ##args)
 #define BLKLOGE(fmt, args...) KLOGE("%s: %s: " fmt, Block::RouteName(), Block::Name(), ##args)
 #define BLKLOGW(fmt, args...) KLOGW("%s: %s: " fmt, Block::RouteName(), Block::Name(), ##args)
 #define BLKLOGI(fmt, args...) KLOGI("%s: %s: " fmt, Block::RouteName(), Block::Name(), ##args)
@@ -103,15 +104,16 @@ class InputEndpoint : public Endpoint {
 
 class OutputEndpoint : public Endpoint {
 public:
-    void Write(const void *data, samples_t samples, int64_t timestamp = -1);
+    void Resize(samples_t samples);
+    void Resize(samples_t samples, const void *data, int64_t timestamp = -1);
 };
 
 class Block {
 public:
-    // The Exchange() API is for customization only
+    // The ioctl() API is used like the Unix ioctl function for customization only
     // Its meaning depends on the block author and varies from block to block
     // The block author needs to take care of the race condition with other APIs like ProcessFrame() etc.
-    virtual int Exchange(id_t id, void *data, size_t size);
+    virtual int ioctl(id_t id, void *data);
 
 protected:
     Block(bool first, bool last);
@@ -129,7 +131,7 @@ protected:
     const std::map<size_t, OutputEndpoint*> &ActiveOutEps() const;
 
 private:
-    Block();
+    Block() = delete;
     void SetName(const std::string &routeName, const std::string &name, const std::string *dumpPath);
     void CloseDump();
 

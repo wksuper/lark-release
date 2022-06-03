@@ -34,7 +34,10 @@
 
 class MyDsp {
 public:
-    MyDsp(): m_playbackRoute(nullptr), m_captureRoute(nullptr) {}
+    MyDsp(const char *playbackPcmName, const char *capturePcmName)
+        : m_playbackPcmName(playbackPcmName)
+        , m_capturePcmName(capturePcmName)
+        , m_playbackRoute(nullptr), m_captureRoute(nullptr) {}
     ~MyDsp() { TeardownRoutes(); }
 
     int SetupRoutes();
@@ -47,6 +50,8 @@ public:
     int StopCapture();
 
 private:
+    const std::string m_playbackPcmName;
+    const std::string m_capturePcmName;
     lark::Route *m_playbackRoute;
     lark::Route *m_captureRoute;
 
@@ -93,7 +98,9 @@ int MyDsp::SetupRoutes()
     }
 
     soFileName = "libblkalsacapture.so";
-    lark::Block *blkAlsaCapture = m_captureRoute->NewBlock(soFileName, true, false);
+    args.clear();
+    args.push_back(m_capturePcmName);
+    lark::Block *blkAlsaCapture = m_captureRoute->NewBlock(soFileName, true, false, args);
     if (!blkAlsaCapture) {
         KLOGE("Failed to new a block from %s", soFileName);
         return -1;
@@ -170,9 +177,6 @@ int MyDsp::SetupRoutes()
     soFileName = "libblkfilewriter.so";
     args.clear();
     args.push_back("./cap-16000_16_1.pcm");
-    args.push_back(std::to_string(captureRate));
-    args.push_back(std::to_string(format));
-    args.push_back(std::to_string(1));
     lark::Block *blkFileWriter = m_captureRoute->NewBlock(soFileName, false, true, args);
     if (!blkFileWriter) {
         KLOGE("Failed to new a block from %s", soFileName);
@@ -257,24 +261,16 @@ int MyDsp::SetupRoutes()
     soFileName = "libblkfilereader.so";
     args.clear();
     args.push_back("./examples/kanr-48000_16_2.pcm");
-    args.push_back(std::to_string(playbackRate));
-    args.push_back(std::to_string(format));
-    args.push_back(std::to_string(chNum));
     lark::Block *blkFileReader = m_playbackRoute->NewBlock(soFileName, true, false, args);
     if (!blkFileReader) {
         KLOGE("Failed to new a block from %s", soFileName);
         return -1;
     }
 
-    soFileName = "libblkinterleave.so";
-    lark::Block *blkInterleave = m_playbackRoute->NewBlock(soFileName, false, false);
-    if (!blkInterleave) {
-        KLOGE("Failed to new a block from %s", soFileName);
-        return -1;
-    }
-
     soFileName = "libblkalsaplayback.so";
-    lark::Block *blkAlsaPlayback = m_playbackRoute->NewBlock(soFileName, false, false);
+    args.clear();
+    args.push_back(m_playbackPcmName);
+    lark::Block *blkAlsaPlayback = m_playbackRoute->NewBlock(soFileName, false, false, args);
     if (!blkAlsaPlayback) {
         KLOGE("Failed to new a block from %s", soFileName);
         return -1;
@@ -295,15 +291,7 @@ int MyDsp::SetupRoutes()
     }
 
     // 6. Create RouteA's links
-    if (!m_playbackRoute->NewLink(playbackRate, format, 1, playbackFrameSizeInSamples, blkFileReader, 0, blkInterleave, 0)) {
-        KLOGE("Failed to new a link");
-        return -1;
-    }
-    if (!m_playbackRoute->NewLink(playbackRate, format, 1, playbackFrameSizeInSamples, blkFileReader, 1, blkInterleave, 1)) {
-        KLOGE("Failed to new a link");
-        return -1;
-    }
-    if (!m_playbackRoute->NewLink(playbackRate, format, chNum, playbackFrameSizeInSamples, blkInterleave, 0, blkAlsaPlayback, 0)) {
+    if (!m_playbackRoute->NewLink(playbackRate, format, chNum, playbackFrameSizeInSamples, blkFileReader, 0, blkAlsaPlayback, 0)) {
         KLOGE("Failed to new a link");
         return -1;
     }
@@ -365,9 +353,15 @@ int MyDsp::StopCapture()
     return ret;
 }
 
-int main()
+int main(int argc, char *argv[])
 {
-    MyDsp mydsp;
+    const char *playbackPcmName = "default";
+    const char *capturePcmName = "default";
+    if (argc == 3) {
+        playbackPcmName = argv[1];
+        capturePcmName = argv[2];
+    }
+    MyDsp mydsp(playbackPcmName, capturePcmName);
 
     if (mydsp.SetupRoutes() < 0)
         return -1;
@@ -379,7 +373,7 @@ int main()
         return -1;
 
     while (1) {
-        KLOGI("Press 's' to stop playback, 'p' to start playback, 'q' to exit");
+        KLOGA("Press 's' to stop playback, 'p' to start playback, 'q' to exit");
 again:
         int c = getchar();
         if (c == '\n')

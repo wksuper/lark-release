@@ -147,22 +147,20 @@ The BlkDelay block is able to add delay between the input endpoints and the outp
 
 The BlkBuffer block is able to buffer amount of data coming from the unique input endpoint.
 When the buffer is full, the oldest sample will be overwritten.
-To read the buffered data, use the `Exchange` API with `id_t id` to be 0, `void *data` to be a pointer to
+To read the buffered data, use the `ioctl` API with `id_t id` to be 0, `void *data` to be a pointer to
 
 ```c++
-struct BlkBufferExchangeData {
+struct BlkBufferPullData {
     // [out] *buf is the output data
     void *buf;
 
-    // [in] the output data size in bytes
+    // [in] buf size in bytes
     size_t size;
 
     // [out] the output data timestamp
     int64_t timestamp;
 };
 ```
-
-and `size_t size` to be `sizeof(BlkBufferExchangeData)`.
 
 - SO Name
   - "libblkbuffer.so"
@@ -216,7 +214,8 @@ BlkAlsaPlayback can accept output endpoints to duplicate the data(with timestamp
 - SO Name
   - "libblkalsaplayback.so"
 - Creation Arguments
-  - None
+  - PCMNAME  (e.g. "default", "hw:0,0", ...)
+  - No argument means pcm name is "default"
 - SetParameter Arguments
   - None
 - GetParameter Arguments
@@ -234,7 +233,8 @@ This block depends on `libasound.so`.
 - SO Name
   - "libblkalsacapture.so"
 - Creation Arguments
-  - None
+  - PCMNAME  (e.g. "default", "hw:0,0", ...)
+  - No argument means pcm name is "default"
 - SetParameter Arguments
   - None
 - GetParameter Arguments
@@ -244,13 +244,13 @@ This block depends on `libasound.so`.
 
 ### 3.11 BlkFileReader
 
-The BlkFileReader block is able to read interleaved data from the PCM audio file and output to its output endpoints(one channel per endpoint).
+The BlkFileReader block is able to read data from the PCM audio file and output to the unique output endpoint(mono or multi-interleaved-channels).
 It should be a 'first' block in a route.
 
 - SO Name
   - "libblkfilereader.so"
 - Creation Arguments
-  - FILEPATH RATE FORMAT CHNUM
+  - FILEPATH
 - SetParameter Arguments
   - None
 - GetParameter Arguments
@@ -260,13 +260,13 @@ It should be a 'first' block in a route.
 
 ### 3.12 BlkFileWriter
 
-The BlkFileWriter block is able to write the multi-channel data from its input endpoints(one channel per endpoint) into a PCM file.
+The BlkFileWriter block is able to write the mono or multi-interleaved-channels data from its unique input endpoint into a PCM audio file.
 It should be a 'last' block in a route.
 
 - SO Name
   - "libblkfilewriter.so"
 - Creation Arguments
-  - FILEPATH RATE FORMAT CHNUM
+  - FILEPATH
 - SetParameter Arguments
   - None
 - GetParameter Arguments

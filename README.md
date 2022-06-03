@@ -51,12 +51,12 @@ Run audio route(s).
 ```
 RouteA
 
-  libblkfilereader.so      libblkinterleave.so     libblkalsaplayback.so
-  *******************      *******************      ******************
-  *                 *0--->0*                 *      *                *
-  *  filereader_0   *1--->1*  interleave_0   *0--->0* alsaplayback_0 *
-  *                 *      *                 *      *                *
-  *******************      *******************      ******************
+  libblkfilereader.so     libblkalsaplayback.so
+  *******************      ******************
+  *                 *      *                *
+  *  filereader_0   *0--->0* alsaplayback_0 *
+  *                 *      *                *
+  *******************      ******************
 ```
 
 ```bash
@@ -72,19 +72,19 @@ The source code of this example is shown in [larkexample1.cpp](https://gitee.com
 ```
 RouteA
 
- libblkfilereader.so     libblkgain.so           libblkmixer.so       libblkinterleave.so     libblkalsaplayback.so
+ libblkfilereader.so   libblkdeinterleave.so   libblkgain.so           libblkmixer.so       libblkinterleave.so     libblkalsaplayback.so
 
-  *****************      *************           **************       *******************      ******************
-  *               *0--->0*           *0-------->0*            *0---->0*                 *      *                *
-  * filereader_0  *1--->1*   gain_0  *1---+      *   mixer_0  *       *   interleave_0  *0--->0* alsaplayback_0 *
-  *               *      *           *    | +-->1*            *   +->1*                 *      *                *
-  *****************      *************    | |    **************   |   *******************      ******************
-                                          | |                     |
-  *****************      *************    | |    **************   |
-  *               *      *           *    +-|-->0*            *0--+
-  * filereader_1  *0--->0*   gain_1  *0-----+    *   mixer_1  *
-  *               *1--->1*           *1-------->1*            *
-  *****************      *************           **************
+  *****************     ******************     *************           **************       *******************      ******************
+  *               *     *                *0-->0*           *0-------->0*            *0---->0*                 *      *                *
+  * filereader_0  *0-->0* deinterleave_0 *1-->1*   gain_0  *1---+      *   mixer_0  *       *   interleave_0  *0--->0* alsaplayback_0 *
+  *               *     *                *     *           *    | +-->1*            *   +->1*                 *      *                *
+  *****************     ******************     *************    | |    **************   |   *******************      ******************
+                                                                | |                     |
+  *****************     ******************     *************    | |    **************   |
+  *               *     *                *     *           *    +-|-->0*            *0--+
+  * filereader_1  *0-->0* deinterleave_0 *0-->0*   gain_1  *0-----+    *   mixer_1  *
+  *               *     *                *1-->1*           *1-------->1*            *
+  *****************     ******************     *************           **************
 ```
 
 ```bash
@@ -98,11 +98,11 @@ The source code of this example is shown in [larkexample2.cpp](https://gitee.com
 #### Example 3: Run dual routes, one for music playback, one for microphone capture with keyword detection
 
 ```
-                                                                                ****************      ****************      ******************      ***************
-                                                                   RouteA       *              *0--->0*              *      *                *      *             *
-                                                                                * filereader_0 *1--->1* interleave_0 *0--->0* alsaplayback_0 *0--->0* streamout_0 *
-                                                                                *              *      *              *      *                *      *             *
-                                                                                ****************      ****************      ******************      ********|******
+                                                                                                      ****************      ******************      ***************
+                                                                                         RouteA       *              *      *                *      *             *
+                                                                                                      * filereader_0 *0--->0* alsaplayback_0 *0--->0* streamout_0 *
+                                                                                                      *              *      *                *      *             *
+                                                                                                      ****************      ******************      ********|******
                                                                                                                                                             v
 =========================================================================================================================================================[FIFO]=====
                                                                                                                                                           |
@@ -132,7 +132,9 @@ $ sudo apt install libspeexdsp-dev
 Run example3:
 
 ```bash
-$ x86_64-linux-gnu/bin/larkexample3
+# The two arguments are the alsa playback pcm name and capture pcm name.
+# They vary machine by machine.
+$ x86_64-linux-gnu/bin/larkexample3 plughw:0,0 plughw:0,0
 ```
 
 If no error, playback and capture will be started.
@@ -145,12 +147,12 @@ The source code of this example is shown in [larkexample3.cpp](https://gitee.com
 ```
 RouteA
 
- libblkfilereader.so   libblkinterleave.so   libblkformatdapter.so    libblksoundtouch.so   libblkpaplayback.so
-  ****************      ****************      *******************      ****************      ****************
-  *              *0--->0*              *      *                 *      *              *      *              *
-  * filereader_0 *1--->1* interleave_0 *0--->0* formatadapter_0 *0--->0* soundtouch_0 *0--->0* paplayback_0 *
-  *              *      *              *      *                 *      *              *      *              *
-  ****************      ****************      *******************      ****************      ****************
+ libblkfilereader.so   libblkformatdapter.so    libblksoundtouch.so   libblkpaplayback.so
+  ****************      *******************      ****************      ****************
+  *              *      *                 *      *              *      *              *
+  * filereader_0 *0--->0* formatadapter_0 *0--->0* soundtouch_0 *0--->0* paplayback_0 *
+  *              *      *                 *      *              *      *              *
+  ****************      *******************      ****************      ****************
 ```
 
 To run example5, the SoundTouch library and the PortAudio library are needed first.
@@ -264,19 +266,13 @@ In the other shell,
 
 ```bash
 $ lkdb newroute RouteA
-Success
-$ lkdb newblock RouteA libblkfilereader.so 1 0 examples/kanr-48000_16_2.pcm 48000 1 2
+Created RouteA
+$ lkdb newblock RouteA libblkfilereader.so true false examples/kanr-48000_16_2.pcm
 Created blkfilereader_0 from libblkfilereader.so on RouteA
-$ lkdb newblock RouteA libblkinterleave.so 0 0
-Created blkinterleave_0 from libblkinterleave.so on RouteA
-$ lkdb newblock RouteA libblkalsaplayback.so 0 1
+$ lkdb newblock RouteA libblkalsaplayback.so false true
 Created blkalsaplayback_0 from libblkalsaplayback.so on RouteA
-$ lkdb newlink RouteA 48000 1 1 960 blkfilereader_0 0 blkinterleave_0 0
+$ lkdb newlink RouteA 48000 S16_LE 2 960 blkfilereader_0 0 blkalsaplayback_0 0
 Created lnk_0 on RouteA
-$ lkdb newlink RouteA 48000 1 1 960 blkfilereader_0 1 blkinterleave_0 1
-Created lnk_1 on RouteA
-$ lkdb newlink RouteA 48000 1 2 960 blkinterleave_0 0 blkalsaplayback_0 0
-Created lnk_2 on RouteA
 $ lkdb start RouteA      # The music playback should be started
 Started RouteA
 $ lkdb stop RouteA
@@ -310,6 +306,14 @@ For applying on real product, you need to call ***lark*** APIs to make your own 
 **A**: One route has one thread to process data. Normally "multi-first-blocks in one route" can work well. In this case, the multiple inputs are able to provide frames at the same pace, and they shouldn't be blocked by each other. For example, one input is alsacapture, one input is filereader. The scenario that needs multi-routes is, if the multiple inputs running in one route have chance to block each other, then they need to be separated into multi-routes. For example, one input is alsacapture, one input is echo-reference.
 
 ## Change Log
+
+### 0.4
+
+- lkdb: Better readable parameters
+- BlkFileReader BlkFileWriter: Remove arguments when creation
+- BlkAlsaPlayback BlkAlsaCapture: Support pcm name when creation
+- Rename block functions for readability
+- Adapt for klogging v0.9
 
 ### 0.3
 

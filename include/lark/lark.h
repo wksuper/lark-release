@@ -66,7 +66,13 @@ public:
     // and all of them will be deleted automatically when the ***lark*** instance is destroying.
     virtual void DeleteFIFO(FIFO *fifo) = 0;
 
-    virtual ~Lark();
+protected:
+    Lark() = default;
+    virtual ~Lark() = default;
+
+private:
+    Lark(const Lark &) = delete;
+    Lark &operator=(const Lark &) = delete;
 };
 
 }

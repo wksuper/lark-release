@@ -195,7 +195,7 @@ int main()
         return -1;
     }
     while (1) {
-        KLOGI("Press 's' to stop, 'p' to play, 'q' to exit");
+        KLOGA("Press 's' to stop, 'p' to play, 'q' to exit");
 again:
         char c;
         if (scanf("%c", &c) != 1)

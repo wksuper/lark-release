@@ -59,18 +59,8 @@ int main()
     const char *soFileName = "libblkfilereader" SUFIX;
     lark::Parameters args;
     args.push_back("./examples/kanr-48000_16_2.pcm");
-    args.push_back(std::to_string(rate));
-    args.push_back(std::to_string(format));
-    args.push_back(std::to_string(chNum));
     lark::Block *blkFileReader = route->NewBlock(soFileName, true, false, args);
     if (!blkFileReader) {
-        KLOGE("Failed to new a block from %s", soFileName);
-        return -1;
-    }
-
-    soFileName = "libblkinterleave" SUFIX;
-    lark::Block *blkInterleave = route->NewBlock(soFileName, false, false);
-    if (!blkInterleave) {
         KLOGE("Failed to new a block from %s", soFileName);
         return -1;
     }
@@ -97,15 +87,7 @@ int main()
     }
 
     // 3. Create RouteA's links
-    if (!route->NewLink(rate, format, 1, frameSizeInSamples, blkFileReader, 0, blkInterleave, 0)) {
-        KLOGE("Failed to new a link");
-        return -1;
-    }
-    if (!route->NewLink(rate, format, 1, frameSizeInSamples, blkFileReader, 1, blkInterleave, 1)) {
-        KLOGE("Failed to new a link");
-        return -1;
-    }
-    if (!route->NewLink(rate, format, chNum, frameSizeInSamples, blkInterleave, 0, blkFormatAdapter, 0)) {
+    if (!route->NewLink(rate, format, chNum, frameSizeInSamples, blkFileReader, 0, blkFormatAdapter, 0)) {
         KLOGE("Failed to new a link");
         return -1;
     }
@@ -124,7 +106,7 @@ int main()
         return -1;
     }
     while (1) {
-        KLOGI("Press 's' to stop, 'p' to play, 'q' to exit");
+        KLOGA("Press 's' to stop, 'p' to play, 'q' to exit");
 again:
         char c;
         if (scanf("%c", &c) != 1)

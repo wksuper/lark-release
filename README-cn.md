@@ -51,12 +51,12 @@ $ sudo ldconfig
 ```
 RouteA
 
-  libblkfilereader.so      libblkinterleave.so     libblkalsaplayback.so
-  *******************      *******************      ******************
-  *                 *0--->0*                 *      *                *
-  *  filereader_0   *1--->1*  interleave_0   *0--->0* alsaplayback_0 *
-  *                 *      *                 *      *                *
-  *******************      *******************      ******************
+  libblkfilereader.so     libblkalsaplayback.so
+  *******************      ******************
+  *                 *      *                *
+  *  filereader_0   *0--->0* alsaplayback_0 *
+  *                 *      *                *
+  *******************      ******************
 ```
 
 ```bash
@@ -72,19 +72,19 @@ $ x86_64-linux-gnu/bin/larkexample1
 ```
 RouteA
 
- libblkfilereader.so     libblkgain.so           libblkmixer.so       libblkinterleave.so     libblkalsaplayback.so
+ libblkfilereader.so   libblkdeinterleave.so   libblkgain.so           libblkmixer.so       libblkinterleave.so     libblkalsaplayback.so
 
-  *****************      *************           **************       *******************      ******************
-  *               *0--->0*           *0-------->0*            *0---->0*                 *      *                *
-  * filereader_0  *1--->1*   gain_0  *1---+      *   mixer_0  *       *   interleave_0  *0--->0* alsaplayback_0 *
-  *               *      *           *    | +-->1*            *   +->1*                 *      *                *
-  *****************      *************    | |    **************   |   *******************      ******************
-                                          | |                     |
-  *****************      *************    | |    **************   |
-  *               *      *           *    +-|-->0*            *0--+
-  * filereader_1  *0--->0*   gain_1  *0-----+    *   mixer_1  *
-  *               *1--->1*           *1-------->1*            *
-  *****************      *************           **************
+  *****************     ******************     *************           **************       *******************      ******************
+  *               *     *                *0-->0*           *0-------->0*            *0---->0*                 *      *                *
+  * filereader_0  *0-->0* deinterleave_0 *1-->1*   gain_0  *1---+      *   mixer_0  *       *   interleave_0  *0--->0* alsaplayback_0 *
+  *               *     *                *     *           *    | +-->1*            *   +->1*                 *      *                *
+  *****************     ******************     *************    | |    **************   |   *******************      ******************
+                                                                | |                     |
+  *****************     ******************     *************    | |    **************   |
+  *               *     *                *     *           *    +-|-->0*            *0--+
+  * filereader_1  *0-->0* deinterleave_0 *0-->0*   gain_1  *0-----+    *   mixer_1  *
+  *               *     *                *1-->1*           *1-------->1*            *
+  *****************     ******************     *************           **************
 ```
 
 ```bash
@@ -98,11 +98,11 @@ $ x86_64-linux-gnu/bin/larkexample2
 #### 例3：运行双路由，一个做音乐播放，一个采集麦克风以做关键词侦测
 
 ```
-                                                                                ****************      ****************      ******************      ***************
-                                                                   RouteA       *              *0--->0*              *      *                *      *             *
-                                                                                * filereader_0 *1--->1* interleave_0 *0--->0* alsaplayback_0 *0--->0* streamout_0 *
-                                                                                *              *      *              *      *                *      *             *
-                                                                                ****************      ****************      ******************      ********|******
+                                                                                                      ****************      ******************      ***************
+                                                                                         RouteA       *              *      *                *      *             *
+                                                                                                      * filereader_0 *0--->0* alsaplayback_0 *0--->0* streamout_0 *
+                                                                                                      *              *      *                *      *             *
+                                                                                                      ****************      ******************      ********|******
                                                                                                                                                             v
 =========================================================================================================================================================[FIFO]=====
                                                                                                                                                           |
@@ -132,7 +132,9 @@ $ sudo apt install libspeexdsp-dev
 运行例3：
 
 ```bash
-$ x86_64-linux-gnu/bin/larkexample3
+# 两个参数指的是alsa playback pcm name和capture pcm name。
+# 它们随着机器的不同而不同。
+$ x86_64-linux-gnu/bin/larkexample3 plughw:0,0 plughw:0,0
 ```
 
 如果没错误的话，播放和录音应该同时开始了。
@@ -145,12 +147,12 @@ $ x86_64-linux-gnu/bin/larkexample3
 ```
 RouteA
 
- libblkfilereader.so   libblkinterleave.so   libblkformatdapter.so    libblksoundtouch.so   libblkpaplayback.so
-  ****************      ****************      *******************      ****************      ****************
-  *              *0--->0*              *      *                 *      *              *      *              *
-  * filereader_0 *1--->1* interleave_0 *0--->0* formatadapter_0 *0--->0* soundtouch_0 *0--->0* paplayback_0 *
-  *              *      *              *      *                 *      *              *      *              *
-  ****************      ****************      *******************      ****************      ****************
+ libblkfilereader.so   libblkformatdapter.so    libblksoundtouch.so   libblkpaplayback.so
+  ****************      *******************      ****************      ****************
+  *              *      *                 *      *              *      *              *
+  * filereader_0 *0--->0* formatadapter_0 *0--->0* soundtouch_0 *0--->0* paplayback_0 *
+  *              *      *                 *      *              *      *              *
+  ****************      *******************      ****************      ****************
 ```
 
 运行例5之前需要先安装SoundTouch库和PortAudio库。
@@ -264,19 +266,13 @@ $ x86_64-linux-gnu/bin/larkexample0    # 运行lark
 
 ```bash
 $ lkdb newroute RouteA
-Success
-$ lkdb newblock RouteA libblkfilereader.so 1 0 examples/kanr-48000_16_2.pcm 48000 1 2
+Created RouteA
+$ lkdb newblock RouteA libblkfilereader.so true false examples/kanr-48000_16_2.pcm
 Created blkfilereader_0 from libblkfilereader.so on RouteA
-$ lkdb newblock RouteA libblkinterleave.so 0 0
-Created blkinterleave_0 from libblkinterleave.so on RouteA
-$ lkdb newblock RouteA libblkalsaplayback.so 0 1
+$ lkdb newblock RouteA libblkalsaplayback.so false true
 Created blkalsaplayback_0 from libblkalsaplayback.so on RouteA
-$ lkdb newlink RouteA 48000 1 1 960 blkfilereader_0 0 blkinterleave_0 0
+$ lkdb newlink RouteA 48000 S16_LE 2 960 blkfilereader_0 0 blkalsaplayback_0 0
 Created lnk_0 on RouteA
-$ lkdb newlink RouteA 48000 1 1 960 blkfilereader_0 1 blkinterleave_0 1
-Created lnk_1 on RouteA
-$ lkdb newlink RouteA 48000 1 2 960 blkinterleave_0 0 blkalsaplayback_0 0
-Created lnk_2 on RouteA
 $ lkdb start RouteA      # 音乐播放应该开始了
 Started RouteA
 $ lkdb stop RouteA
@@ -316,6 +312,14 @@ Deleted RouteA
 需要用到“多路由”的场景是，当多个输入放在一个路由里运行会有机会相互阻塞时，那么它们就应该被分离到多个路由。例如，一个输入alsacapture，一个输入是echo-reference。
 
 ## 版本历史
+
+### 0.4
+
+- lkdb: 参数更具可读性
+- BlkFileReader BlkFileWriter: 移除了创建时所需的参数
+- BlkAlsaPlayback BlkAlsaCapture: 支持创建时传递pcm name参数
+- 重命名块的一些函数名，以增加可读性
+- 适配了klogging v0.9
 
 ### 0.3
 
