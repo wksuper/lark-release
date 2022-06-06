@@ -3,7 +3,7 @@
 [English](https://gitee.com/wksuper/lark-release/blob/master/README.md) | [简体中文](https://gitee.com/wksuper/lark-release/blob/master/README-cn.md)
 
 ***lark*** is a lite but powerful software audio DSP. It provides a flexible and scalable way to design audio route(s) with high performance, low MCPS and low latency that allows you to build your audio system like building blocks.
-Main features (as of v0.3):
+Main features (as of v0.5):
 
 - Support realtime manipulating audio routes
   - Load/Unload blocks in real time
@@ -12,7 +12,7 @@ Main features (as of v0.3):
   - Set log level in real time
   - Dump data of each block in real time
 - Support prebuilt I/O blocks
-  - file-reader, file-writer, stream-in, stream-out, alsa-capture, alsa-playback, tinyalsa-playback, tinyalsa-capture, portaudio-playback, portaudio-capture
+  - file-reader, file-writer, stream-in, stream-out, alsa-capture, alsa-playback, tinyalsa-capture, tinyalsa-playback, portaudio-capture, portaudio-playback
 - Support prebuilt algorithm blocks
   - gain, mixer(duplicator), interleave, de-interleave, format-adapter, delay, align, buffer, speex-resampler, speex-preprocessor, soundtouch
 - Support customizing blocks extensively
@@ -155,7 +155,7 @@ RouteA
   ****************      *******************      ****************      ****************
 ```
 
-To run example5, the SoundTouch library and the PortAudio library are needed first.
+To run example5, the ***SoundTouch*** library and the ***PortAudio*** library are needed first.
 
 ```bash
 $ sudo apt install libsoundtouch-dev
@@ -217,9 +217,10 @@ Usage:
   lkdb delete ROUTENAME !
     - Delete the entire route
   lkdb loglevel LEVEL
-    - Set the logging LEVEL: 0=off 1=error 2=warning 3=info(default) 4=debug 5=verbose
+    - Set the logging LEVEL: 0=off 1=fatal 2=error 3=warning 4=info(default) 5=debug 6=verbose
   lkdb setdump DIRECTORY
-    - Set dump directory path. Disable the dump when DIRECTORY=off.
+    - Enable dumping log & data when DIRECTORY is a valid path
+    - Disable dumping log & data when DIRECTORY is --
 ```
 
 For example, when running example2, in the other shell, you can tune example2's volume gains via `lkdb`.
@@ -306,6 +307,13 @@ For applying on real product, you need to call ***lark*** APIs to make your own 
 **A**: One route has one thread to process data. Normally "multi-first-blocks in one route" can work well. In this case, the multiple inputs are able to provide frames at the same pace, and they shouldn't be blocked by each other. For example, one input is alsacapture, one input is filereader. The scenario that needs multi-routes is, if the multiple inputs running in one route have chance to block each other, then they need to be separated into multi-routes. For example, one input is alsacapture, one input is echo-reference.
 
 ## Change Log
+
+### 0.5
+
+- Fixed invalid dumpFileName when data dump
+- Supported log dump
+- Supported conf file
+  - Refer to [MANUAL.md - 6 Configuration File](https://gitee.com/wksuper/lark-release/blob/master/MANUAL.md#6-configuration-file) for detail.
 
 ### 0.4
 

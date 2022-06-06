@@ -76,14 +76,9 @@ KLOGGING_API int _klogging_set_file(const char *filename);
 KLOGGING_API void _klogging_enable_options(KLoggingOptions options);
 KLOGGING_API void _klogging_disable_options(KLoggingOptions options);
 KLOGGING_API void _klogging_set_level(enum KLoggingLevel level);
-KLOGGING_API void _klogging_a(KLoggingOptions enOpts, KLoggingOptions disOpts, const char *lineEnd, const char *file, int line, const char *function, const char *logTag, const char *format, ...);
-KLOGGING_API void _klogging_f(KLoggingOptions enOpts, KLoggingOptions disOpts, const char *lineEnd, const char *file, int line, const char *function, const char *logTag, const char *format, ...);
-KLOGGING_API void _klogging_e(KLoggingOptions enOpts, KLoggingOptions disOpts, const char *lineEnd, const char *file, int line, const char *function, const char *logTag, const char *format, ...);
-KLOGGING_API void _klogging_w(KLoggingOptions enOpts, KLoggingOptions disOpts, const char *lineEnd, const char *file, int line, const char *function, const char *logTag, const char *format, ...);
-KLOGGING_API void _klogging_i(KLoggingOptions enOpts, KLoggingOptions disOpts, const char *lineEnd, const char *file, int line, const char *function, const char *logTag, const char *format, ...);
-KLOGGING_API void _klogging_d(KLoggingOptions enOpts, KLoggingOptions disOpts, const char *lineEnd, const char *file, int line, const char *function, const char *logTag, const char *format, ...);
-KLOGGING_API void _klogging_v(KLoggingOptions enOpts, KLoggingOptions disOpts, const char *lineEnd, const char *file, int line, const char *function, const char *logTag, const char *format, ...);
-
+KLOGGING_API void _klogging_print(KLoggingOptions enOpts, KLoggingOptions disOpts, const char *lineEnd,
+	char type, const char *file, int line, const char *function, const char *logTag,
+	const char *format, ...);
 
 // KLOG_SET() is used in the entry of main(int argc, char *argv[]).
 // This enables parameters to be set when launching the program who uses klogging.
@@ -108,13 +103,13 @@ static inline const char *KLOG_VERSION() { return _klogging_version(); }
 
 // klogx() APIs are used when some options need to be temporarily turned ON/OFF for this message
 // or a special line-end string(e.g. "") temporarily needed for this message.
-#define kloga(enOpts, disOpts, lineEnd, ...) _klogging_a(enOpts, disOpts, lineEnd, __FILE__, __LINE__, __FUNCTION__, LOG_TAG, __VA_ARGS__)
-#define klogf(enOpts, disOpts, lineEnd, ...) _klogging_f(enOpts, disOpts, lineEnd, __FILE__, __LINE__, __FUNCTION__, LOG_TAG, __VA_ARGS__)
-#define kloge(enOpts, disOpts, lineEnd, ...) _klogging_e(enOpts, disOpts, lineEnd, __FILE__, __LINE__, __FUNCTION__, LOG_TAG, __VA_ARGS__)
-#define klogw(enOpts, disOpts, lineEnd, ...) _klogging_w(enOpts, disOpts, lineEnd, __FILE__, __LINE__, __FUNCTION__, LOG_TAG, __VA_ARGS__)
-#define klogi(enOpts, disOpts, lineEnd, ...) _klogging_i(enOpts, disOpts, lineEnd, __FILE__, __LINE__, __FUNCTION__, LOG_TAG, __VA_ARGS__)
-#define klogd(enOpts, disOpts, lineEnd, ...) _klogging_d(enOpts, disOpts, lineEnd, __FILE__, __LINE__, __FUNCTION__, LOG_TAG, __VA_ARGS__)
-#define klogv(enOpts, disOpts, lineEnd, ...) _klogging_v(enOpts, disOpts, lineEnd, __FILE__, __LINE__, __FUNCTION__, LOG_TAG, __VA_ARGS__)
+#define kloga(enOpts, disOpts, lineEnd, ...) _klogging_print(enOpts, disOpts, lineEnd, 'A', __FILE__, __LINE__, __FUNCTION__, LOG_TAG, __VA_ARGS__)
+#define klogf(enOpts, disOpts, lineEnd, ...) _klogging_print(enOpts, disOpts, lineEnd, 'F', __FILE__, __LINE__, __FUNCTION__, LOG_TAG, __VA_ARGS__)
+#define kloge(enOpts, disOpts, lineEnd, ...) _klogging_print(enOpts, disOpts, lineEnd, 'E', __FILE__, __LINE__, __FUNCTION__, LOG_TAG, __VA_ARGS__)
+#define klogw(enOpts, disOpts, lineEnd, ...) _klogging_print(enOpts, disOpts, lineEnd, 'W', __FILE__, __LINE__, __FUNCTION__, LOG_TAG, __VA_ARGS__)
+#define klogi(enOpts, disOpts, lineEnd, ...) _klogging_print(enOpts, disOpts, lineEnd, 'I', __FILE__, __LINE__, __FUNCTION__, LOG_TAG, __VA_ARGS__)
+#define klogd(enOpts, disOpts, lineEnd, ...) _klogging_print(enOpts, disOpts, lineEnd, 'D', __FILE__, __LINE__, __FUNCTION__, LOG_TAG, __VA_ARGS__)
+#define klogv(enOpts, disOpts, lineEnd, ...) _klogging_print(enOpts, disOpts, lineEnd, 'V', __FILE__, __LINE__, __FUNCTION__, LOG_TAG, __VA_ARGS__)
 
 // KLOGX() APIs are used for normal message print.
 

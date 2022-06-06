@@ -548,3 +548,33 @@ It can be overridden.
 This function returns the delay(in micro-secondond) from the input endpoint(s) to the output endpoint(s).
 It could be called at any time.
 It can be overridden.
+
+## 6 Configuration File
+
+***lark*** supports some parameters to be configured before being launched.
+
+If `/etc/lark.conf` exists, ***lark*** will read configurations from it, otherwise default configurations will be applied.
+
+A typical `/etc/lark.conf` looks like:
+
+```conf
+[config]
+loglevel=6
+dumppath=/your/lark/dump/path
+```
+
+where `loglevel`'s value is interpreted as
+
+- 0: off
+- 1: fatal
+- 2: error
+- 3: warning
+- 4: info
+- 5: debug
+- 6: verbose
+
+`dumppath`'s value is interpreted as the directory in which the data dump and log dump will be saved.
+
+If none of them is assigned, then lark will use loglevel=4(info) as default and no log/data dump as default.
+
+Note: `lkdb loglevel` and `lkdb setdump` only change the log level and dump path in real time, and do not take effect on this configuration file.

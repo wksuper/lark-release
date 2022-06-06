@@ -3,7 +3,7 @@
 [English](https://gitee.com/wksuper/lark-release/blob/master/README.md) | [简体中文](https://gitee.com/wksuper/lark-release/blob/master/README-cn.md)
 
 ***lark***是一个轻量级但功能强大的软件音频DSP。它提供了一种灵活可扩展的方法来设计高性能、低MCPS、低延时的音频路由，让您可以像搭积木一样构建音频系统。
-主要特性（至v0.3版本）：
+主要特性（至v0.5版本）：
 
 - 支持实时操作音频路由
   - 实时加载/卸载块
@@ -12,7 +12,7 @@
   - 实时设定日志等级
   - 实时转储每个块的数据
 - 支持预编译的输入/输出块
-  - file-reader, file-writer, stream-in, stream-out, alsa-capture, alsa-playback, tinyalsa-playback, tinyalsa-capture, portaudio-playback, portaudio-capture
+  - file-reader, file-writer, stream-in, stream-out, alsa-capture, alsa-playback, tinyalsa-capture, tinyalsa-playback, portaudio-capture, portaudio-playback
 - 支持预编译的算法块
   - gain, mixer(duplicator), interleave, de-interleave, format-adapter, delay, align, buffer, speex-resampler, speex-preprocessor, soundtouch
 - 支持无限客制化块
@@ -155,7 +155,7 @@ RouteA
   ****************      *******************      ****************      ****************
 ```
 
-运行例5之前需要先安装SoundTouch库和PortAudio库。
+运行例5之前需要先安装 ***SoundTouch*** 库和 ***PortAudio*** 库。
 
 ```bash
 $ sudo apt install libsoundtouch-dev
@@ -190,7 +190,7 @@ $ lkdb setparam RouteA blksoundtouch_0 3 1.0    # 播放速率变正常
 
 ## 用`lkdb`实时调试
 
-当 ***lark*** 在一个进程里运行时，调试工具`lkdb`可以跟它通信，从 ***lark*** 获取信息，向 ***lark*** 发生命令。
+当 ***lark*** 在一个进程里运行时，调试工具`lkdb`可以跟它通信，从 ***lark*** 获取信息，向 ***lark*** 发送命令。
 
 ```
 Usage:
@@ -217,9 +217,10 @@ Usage:
   lkdb delete ROUTENAME !
     - Delete the entire route
   lkdb loglevel LEVEL
-    - Set the logging LEVEL: 0=off 1=error 2=warning 3=info(default) 4=debug 5=verbose
+    - Set the logging LEVEL: 0=off 1=fatal 2=error 3=warning 4=info(default) 5=debug 6=verbose
   lkdb setdump DIRECTORY
-    - Set dump directory path. Disable the dump when DIRECTORY=off.
+    - Enable dumping log & data when DIRECTORY is a valid path
+    - Disable dumping log & data when DIRECTORY is --
 ```
 
 举个例子，当例2运行时，在另外一个shell里，您可以通过`lkdb`调节例2的音量。
@@ -248,7 +249,9 @@ $ lkdb setparam RouteA blkgain_1 1 1 1.0    # pacificrim-48000_16_2.pcm右声道
 
 ### 第1步
 
-在您的脑海中设计好路由。那些预编译好的块（像gain, mixer等）可以直接使用。如果您想要客制化的块，您可以自行编译动态库。[BlkPassthrough.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/BlkPassthrough.cpp)是一个块源码的例子。参考[MANUAL.md - 4 Build Your Own Block](https://gitee.com/wksuper/lark-release/blob/master/MANUAL.md#4-build-your-own-block)以获取更多信息。
+在您的脑海中设计好路由。那些预编译好的块（像gain, mixer等）可以直接使用。如果您想要客制化的块，您可以自行编译动态库。
+[BlkPassthrough.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/BlkPassthrough.cpp)是一个块源码的例子。
+参考[MANUAL.md - 4 Build Your Own Block](https://gitee.com/wksuper/lark-release/blob/master/MANUAL.md#4-build-your-own-block)以获取更多信息。
 
 ### 第2步
 
@@ -312,6 +315,13 @@ Deleted RouteA
 需要用到“多路由”的场景是，当多个输入放在一个路由里运行会有机会相互阻塞时，那么它们就应该被分离到多个路由。例如，一个输入alsacapture，一个输入是echo-reference。
 
 ## 版本历史
+
+### 0.5
+
+- 修复了数据转储时无效的dumpFileName问题
+- 支持了日志转储
+- 支持了配置文件
+  - 参考[MANUAL.md - 6 Configuration File](https://gitee.com/wksuper/lark-release/blob/master/MANUAL.md#6-configuration-file)以获取更多信息。
 
 ### 0.4
 
