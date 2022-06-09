@@ -64,6 +64,16 @@ enum SampleFormat {
     FLOAT_LE = 5, FLOAT_BE = 6
 };
 
+static inline bool IsLittleEndian()
+{
+    uint16_t x = 0x1234;
+    return *((uint8_t *)&x) == 0x34;
+}
+
+static const enum SampleFormat SampleFormat_S16 = IsLittleEndian() ? SampleFormat::S16_LE : SampleFormat::S16_BE;
+static const enum SampleFormat SampleFormat_S32 = IsLittleEndian() ? SampleFormat::S32_LE : SampleFormat::S32_BE;
+static const enum SampleFormat SampleFormat_FLOAT = IsLittleEndian() ? SampleFormat::FLOAT_LE : SampleFormat::FLOAT_BE;
+
 static inline const char *FormatToString(SampleFormat format)
 {
     static const char *s_tbl[] = {

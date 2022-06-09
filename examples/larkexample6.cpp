@@ -43,7 +43,7 @@
 int main()
 {
     const unsigned int rate = 48000;
-    const lark::SampleFormat format = lark::SampleFormat::S16_LE;
+    const lark::SampleFormat format = lark::SampleFormat_S32;
     const unsigned int chNum = 2;
     const unsigned int frameDuration_ms = 20;
     const lark::samples_t frameSizeInSamples = frameDuration_ms * rate / 1000;
@@ -57,7 +57,7 @@ int main()
         return -1;
     }
 
-    // Create the playback playbackRoute named RouteA
+    // Create the playback route named RouteA
     lark::Route *playbackRoute = lark::Lark::Instance().NewRoute("RouteA");
     if (!playbackRoute) {
         KLOGE("Failed to create playbackRoute");
@@ -116,17 +116,17 @@ int main()
         KLOGE("Failed to new a link");
         return -1;
     }
-    if (!playbackRoute->NewLink(rate, lark::SampleFormat::FLOAT_LE, chNum, frameSizeInSamples, blkFormatAdapter, 0, blkSoundTouch, 0)) {
+    if (!playbackRoute->NewLink(rate, lark::SampleFormat_FLOAT, chNum, frameSizeInSamples, blkFormatAdapter, 0, blkSoundTouch, 0)) {
         KLOGE("Failed to new a link");
         return -1;
     }
-    if (!playbackRoute->NewLink(rate, lark::SampleFormat::FLOAT_LE, chNum, frameSizeInSamples, blkSoundTouch, 0, blkPAPlayback, 0)) {
+    if (!playbackRoute->NewLink(rate, lark::SampleFormat_FLOAT, chNum, frameSizeInSamples, blkSoundTouch, 0, blkPAPlayback, 0)) {
         KLOGE("Failed to new a link");
         return -1;
     }
 
 
-    // Create the capture route  named RouteB
+    // Create the capture route named RouteB
     lark::Route *captureRoute = lark::Lark::Instance().NewRoute("RouteB");
     if (!captureRoute) {
         KLOGE("Failed to create captureRoute");
@@ -136,6 +136,24 @@ int main()
     soFileName = "libblkpacapture" SUFIX;
     lark::Block *blkPACapture = captureRoute->NewBlock(soFileName, true, false);
     if (!blkPACapture) {
+        KLOGE("Failed to new a block from %s", soFileName);
+        return -1;
+    }
+
+    soFileName = "libblksoxeffect" SUFIX;
+    args.clear();
+    args.push_back("vol");
+    lark::Block *blkSoxVol = captureRoute->NewBlock(soFileName, false, false, args);
+    if (!blkSoxVol) {
+        KLOGE("Failed to new a block from %s", soFileName);
+        return -1;
+    }
+
+    soFileName = "libblksoxeffect" SUFIX;
+    args.clear();
+    args.push_back("echos");
+    lark::Block *blkSoxEchos = captureRoute->NewBlock(soFileName, false, false, args);
+    if (!blkSoxEchos) {
         KLOGE("Failed to new a block from %s", soFileName);
         return -1;
     }
@@ -168,7 +186,15 @@ int main()
         return -1;
     }
 
-    if (!captureRoute->NewLink(rate, format, 1, frameSizeInSamples, blkPACapture, 0, blkMixer, 0)) {
+    if (!captureRoute->NewLink(rate, format, 1, frameSizeInSamples, blkPACapture, 0, blkSoxVol, 0)) {
+        KLOGE("Failed to new a link");
+        return -1;
+    }
+    if (!captureRoute->NewLink(rate, format, 1, frameSizeInSamples, blkSoxVol, 0, blkSoxEchos, 0)) {
+        KLOGE("Failed to new a link");
+        return -1;
+    }
+    if (!captureRoute->NewLink(rate, format, 1, frameSizeInSamples, blkSoxEchos, 0, blkMixer, 0)) {
         KLOGE("Failed to new a link");
         return -1;
     }

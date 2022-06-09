@@ -3,7 +3,7 @@
 [English](https://gitee.com/wksuper/lark-release/blob/master/README.md) | [简体中文](https://gitee.com/wksuper/lark-release/blob/master/README-cn.md)
 
 ***lark***是一个轻量级但功能强大的软件音频DSP。它提供了一种灵活可扩展的方法来设计高性能、低MCPS、低延时的音频路由，让您可以像搭积木一样构建音频系统。
-主要特性（至v0.5版本）：
+主要特性（至v0.6版本）：
 
 - 支持实时操作音频路由
   - 实时加载/卸载块
@@ -14,7 +14,7 @@
 - 支持预编译的输入/输出块
   - file-reader, file-writer, stream-in, stream-out, alsa-capture, alsa-playback, tinyalsa-capture, tinyalsa-playback, portaudio-capture, portaudio-playback
 - 支持预编译的算法块
-  - gain, mixer(duplicator), interleave, de-interleave, format-adapter, delay, align, buffer, speex-resampler, speex-preprocessor, soundtouch
+  - gain, mixer(duplicator), interleave, de-interleave, format-adapter, delay, align, buffer, speex-resampler, speex-preprocessor, soundtouch, sox-effect
 - 支持无限客制化块
 - 支持每块最多32个输入端点，32个输出端点
 - 支持基于帧的时间戳和基于采样点的时间戳
@@ -98,29 +98,29 @@ $ x86_64-linux-gnu/bin/larkexample2
 #### 例3：运行双路由，一个做音乐播放，一个采集麦克风以做关键词侦测
 
 ```
-                                                                                                      ****************      ******************      ***************
-                                                                                         RouteA       *              *      *                *      *             *
-                                                                                                      * filereader_0 *0--->0* alsaplayback_0 *0--->0* streamout_0 *
-                                                                                                      *              *      *                *      *             *
-                                                                                                      ****************      ******************      ********|******
-                                                                                                                                                            v
-=========================================================================================================================================================[FIFO]=====
-                                                                                                                                                          |
-  **************     **************      *************     ***********************     ******************     ***********     *****************      *****v********
-  *            *     *            *      *           *     *                     *     *                *     *         *     *               *      *            *
-  * dummykwd_0 *0<--0*            *      *           *     *                     *0<--0* deinterleave_0 *0<--0*         *0<--0* alsacapture_0 *      * streamin_0 *
-  *            *     *            *      *           *     *                     *1<--1*                *     *         *     *               *      *            *
-  **************     *            *      *           *     *                     *     ******************     *         *     *****************      ******0*******
-                     *            *      *           *     *                     *                            *         *                                  v
-                     *  mixer_1   *0<---0* dummybf_0 *0<--0* speexpreprocessor_0 *                            * align_0 *                        **********0*******
-                     *(duplicator)*      *           *1<--1* (aec, denoise, ...) *                            *         *          RouteB        * deinterleave_1 *
-                     *            *      *           *     *                     *                            *         *                        ********0**1******
-                     *            *      *           *     *                     *                            *         *                                v  v
-****************     *            *      *           *     *                     *                            *         *     ***********      **********0**1******
-*              *     *            *      *           *     *                     *16<------------------------1*         *     *         *0<---0*                  *
-* filewriter_0 *0<--1*            *      *           *     *                     *                            *         *1<--0* mixer_0 *1<---1* speexresampler_0 *
-*              *     *            *      *           *     *                     *                            *         *     *         *      *                  *
-****************     **************      *************     ***********************                            ***********     ***********      ********************
+                                                                                                     ****************      ******************      ***************
+                                                                                        RouteA       *              *      *                *      *             *
+                                                                                                     * filereader_0 *0--->0* alsaplayback_0 *0--->0* streamout_0 *
+                                                                                                     *              *      *                *      *             *
+                                                                                                     ****************      ******************      ********|******
+                                                                                                                                                           v
+========================================================================================================================================================[FIFO]=====
+                                                                                                                                                         |
+  **************     **************     *************     ***********************     ******************     ***********     *****************      *****v********
+  *            *     *            *     *           *     *                     *     *                *     *         *     *               *      *            *
+  * dummykwd_0 *0<--0*            *     *           *     *                     *0<--0* deinterleave_0 *0<--0*         *0<--0* alsacapture_0 *      * streamin_0 *
+  *            *     *            *     *           *     *                     *1<--1*                *     *         *     *               *      *            *
+  **************     *            *     *           *     *                     *     ******************     *         *     *****************      ******0*******
+                     *            *     *           *     *                     *                            *         *                                  v
+                     *  mixer_1   *0<--0* dummybf_0 *0<--0* speexpreprocessor_0 *                            * align_0 *                        **********0*******
+                     *(duplicator)*     *           *1<--1* (aec, denoise, ...) *                            *         *          RouteB        * deinterleave_1 *
+                     *            *     *           *     *                     *                            *         *                        ********0**1******
+                     *            *     *           *     *                     *                            *         *                                v  v
+****************     *            *     *           *     *                     *                            *         *     ***********      **********0**1******
+*              *     *            *     *           *     *                     *16<------------------------1*         *     *         *0<---0*                  *
+* filewriter_0 *0<--1*            *     *           *     *                     *                            *         *1<--0* mixer_0 *1<---1* speexresampler_0 *
+*              *     *            *     *           *     *                     *                            *         *     *         *      *                  *
+****************     **************     *************     ***********************                            ***********     ***********      ********************
 ```
 
 运行例3之前，需要先安装speex库。
@@ -187,6 +187,51 @@ $ lkdb setparam RouteA blksoundtouch_0 3 1.0    # 播放速率变正常
 ```
 
 这个例子的源代码在此：[larkexample5.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample5.cpp)。
+
+
+#### 例7：运行一个带SoX效果器的单播放路由
+
+```
+RouteA
+
+ libblkfilereader.so  libblkformatdapter.so   libblkdeinterleave.so  libblkmixer.so  libblksoxeffect.so  libblkinterleave.so  libblkpaplayback.so
+
+  ****************     *******************     ******************     ***********     ***************     ****************     ****************
+  *              *     *                 *     *                *     *         *     * soxeffect_0 *     *              *     *              *
+  *              *     *                 *     *                *0-->0*         *0-->0* (highpass)  *0-->0*              *     *              *
+  *              *     *                 *     *                *     *         *     ***************     *              *     *              *
+  * filereader_0 *0-->0* formatadapter_0 *0-->0* deinterleave_0 *     * mixer_0 *                         * interleave_0 *0-->0* paplayback_0 *
+  *              *     *                 *     *                *     *         *     ***************     *              *     *              *
+  *              *     *                 *     *                *1-->1*         *0-->0* soxeffect_1 *0-->1*              *     *              *
+  *              *     *                 *     *                *     *         *     *  (lowpass)  *     *              *     *              *
+  ****************     *******************     ******************     ***********     ***************     ****************     ****************
+```
+
+运行例7之前需要先安装 ***SoX*** 库和 ***PortAudio*** 库。
+
+```bash
+$ sudo apt install libsox-dev
+$ sudo apt install libportaudio2
+```
+
+运行例7：
+
+```bash
+$ x86_64-linux-gnu/bin/larkexample7
+```
+
+如果没错误的话，播放应该开始了。
+
+在另一个shell里，
+
+```bash
+$ lkdb status                                  # 显示lark状态
+
+$ lkdb setparam RouteA blksoxeffect_0 0 400    # 只有高于400Hz的音乐信号输出到左喇叭
+$ lkdb setparam RouteA blksoxeffect_1 0 400    # 只有低于400Hz的音乐信号输出到右喇叭
+```
+
+这个例子的源代码在此：[larkexample7.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample7.cpp)。
 
 ## 用`lkdb`实时调试
 
@@ -315,6 +360,12 @@ Deleted RouteA
 需要用到“多路由”的场景是，当多个输入放在一个路由里运行会有机会相互阻塞时，那么它们就应该被分离到多个路由。例如，一个输入alsacapture，一个输入是echo-reference。
 
 ## 版本历史
+
+### 0.6
+
+- 增加了BlkSoxEffect块：音量(vol)，镶边(flanger)，颤音(tremolo)，回音(echos)，合唱(chorus)，均衡器(equalizer)，高通(highpass)，低通(lowpass)，等等。
+- 增加了例7：一个简单的SoX高通滤波器和低通滤波器的应用
+- 适配了klogging v1.1
 
 ### 0.5
 

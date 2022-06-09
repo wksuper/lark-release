@@ -23,6 +23,14 @@
 
 #include <stdint.h>
 #include <stddef.h>
+#include <assert.h>
+
+#define KLOG_MAJOR_VER  1  /* Increases when any API definition is changed */
+#define KLOG_MINOR_VER  1  /* Increases when new features are added */
+#define KLOG_PATCH_VER  0  /* Increases when bugs are fixed */
+#if (KLOG_MAJOR_VER > UINT8_MAX) || (KLOG_MINOR_VER > UINT8_MAX) || (KLOG_PATCH_VER > UINT8_MAX)
+#error Wrong version number
+#endif
 
 #ifndef LOG_TAG
 #define LOG_TAG NULL
@@ -71,6 +79,7 @@ enum KLoggingLevel {
 };
 
 KLOGGING_API const char *_klogging_version();
+KLOGGING_API int _klogging_version_compatible(uint8_t majorVer);
 KLOGGING_API int _klogging_set(int argc, char *argv[]);
 KLOGGING_API int _klogging_set_file(const char *filename);
 KLOGGING_API void _klogging_enable_options(KLoggingOptions options);
@@ -83,20 +92,40 @@ KLOGGING_API void _klogging_print(KLoggingOptions enOpts, KLoggingOptions disOpt
 // KLOG_SET() is used in the entry of main(int argc, char *argv[]).
 // This enables parameters to be set when launching the program who uses klogging.
 // Returns 0 on success and a negative value on failure.
-static inline int KLOG_SET(int argc, char *argv[]) { return _klogging_set(argc, argv); }
+static inline int KLOG_SET(int argc, char *argv[])
+{
+	assert(_klogging_version_compatible(KLOG_MAJOR_VER));
+	return _klogging_set(argc, argv);
+}
 
 // KLOG_SET_FILE() enables all the logs to be dummped to a file, and disables the dump when filename=NULL.
 // Returns 0 on success and a negative value on failure.
-static inline int KLOG_SET_FILE(const char *filename) { return _klogging_set_file(filename); }
+static inline int KLOG_SET_FILE(const char *filename)
+{
+	assert(_klogging_version_compatible(KLOG_MAJOR_VER));
+	return _klogging_set_file(filename);
+}
 
 // KLOG_ENABLE_OPTIONS() enables options.
-static inline void KLOG_ENABLE_OPTIONS(KLoggingOptions options) { _klogging_enable_options(options); }
+static inline void KLOG_ENABLE_OPTIONS(KLoggingOptions options)
+{
+	assert(_klogging_version_compatible(KLOG_MAJOR_VER));
+	_klogging_enable_options(options);
+}
 
 // KLOG_DISABLE_OPTIONS() disables options.
-static inline void KLOG_DISABLE_OPTIONS(KLoggingOptions options) { _klogging_disable_options(options); }
+static inline void KLOG_DISABLE_OPTIONS(KLoggingOptions options)
+{
+	assert(_klogging_version_compatible(KLOG_MAJOR_VER));
+	_klogging_disable_options(options);
+}
 
 // KLOG_SET_LEVEL() sets the logging level.
-static inline void KLOG_SET_LEVEL(enum KLoggingLevel level) { _klogging_set_level(level); }
+static inline void KLOG_SET_LEVEL(enum KLoggingLevel level)
+{
+	assert(_klogging_version_compatible(KLOG_MAJOR_VER));
+	_klogging_set_level(level);
+}
 
 // KLOG_VERSION() returns the version string.
 static inline const char *KLOG_VERSION() { return _klogging_version(); }
@@ -133,6 +162,13 @@ static inline const char *KLOG_VERSION() { return _klogging_version(); }
 
 // Print when log level >= KLOGGING_LEVEL_VERBOSE
 #define KLOGV(...)    klogv(0, 0, NULL, __VA_ARGS__)
+
+// Always print with failure assertion
+#define KBUG(...) \
+	do { \
+		kloga(KLOGGING_FLUSH_IMMEDIATELY, KLOGGING_NO_TIMESTAMP | KLOGGING_NO_LOGTYPE | KLOGGING_NO_SOURCEFILE, NULL, "BUG: " __VA_ARGS__); \
+		assert(0); \
+	} while (0)
 
 #ifdef __cplusplus
 } // extern "C"

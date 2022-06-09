@@ -49,6 +49,7 @@ namespace lark {
 #define BLKLOGI(fmt, args...) KLOGI("%s: %s: " fmt, Block::RouteName(), Block::Name(), ##args)
 #define BLKLOGD(fmt, args...) KLOGD("%s: %s: " fmt, Block::RouteName(), Block::Name(), ##args)
 #define BLKLOGV(fmt, args...) KLOGV("%s: %s: " fmt, Block::RouteName(), Block::Name(), ##args)
+#define BLKBUG(fmt, args...)  KBUG("%s: %s: " fmt, Block::RouteName(), Block::Name(), ##args)
 
 class Block;
 class Link;
@@ -129,6 +130,8 @@ protected:
     OutputEndpoint &OutEp(size_t idx) { return m_outEps[idx]; }
     const std::map<size_t, InputEndpoint*> &ActiveInEps() const;
     const std::map<size_t, OutputEndpoint*> &ActiveOutEps() const;
+
+    bool Started() const { return m_started; }
 
 private:
     Block() = delete;
