@@ -276,7 +276,46 @@ Usage:
 
 ```bash
 $ lkdb status                               # 显示lark状态
+RouteA is RUNNING, 625 frames processed OK, 0 error frame
+	blkfilereader_0
+		(O00) --> lnk_0    48000Hz   S16_LE  2ch    960samples/frame
+	blkdeinterleave_0
+		(I00) <-- lnk_0    48000Hz   S16_LE  2ch    960samples/frame
+		(O00) --> lnk_1    48000Hz   S16_LE  1ch    960samples/frame
+		(O01) --> lnk_2    48000Hz   S16_LE  1ch    960samples/frame
+	blkfilereader_1
+		(O00) --> lnk_3    48000Hz   S16_LE  2ch    960samples/frame
+	blkdeinterleave_1
+		(I01) <-- lnk_3    48000Hz   S16_LE  2ch    960samples/frame
+		(O00) --> lnk_4    48000Hz   S16_LE  1ch    960samples/frame
+		(O01) --> lnk_5    48000Hz   S16_LE  1ch    960samples/frame
+	blkgain_0
+		(I00) <-- lnk_1    48000Hz   S16_LE  1ch    960samples/frame
+		(I01) <-- lnk_2    48000Hz   S16_LE  1ch    960samples/frame
+		(O00) --> lnk_6    48000Hz   S16_LE  1ch    960samples/frame
+		(O01) --> lnk_7    48000Hz   S16_LE  1ch    960samples/frame
+	blkgain_1
+		(I00) <-- lnk_4    48000Hz   S16_LE  1ch    960samples/frame
+		(I01) <-- lnk_5    48000Hz   S16_LE  1ch    960samples/frame
+		(O00) --> lnk_8    48000Hz   S16_LE  1ch    960samples/frame
+		(O01) --> lnk_9    48000Hz   S16_LE  1ch    960samples/frame
+	blkmixer_0
+		(I00) <-- lnk_6    48000Hz   S16_LE  1ch    960samples/frame
+		(I01) <-- lnk_8    48000Hz   S16_LE  1ch    960samples/frame
+		(O00) --> lnk_10   48000Hz   S16_LE  1ch    960samples/frame
+	blkmixer_1
+		(I00) <-- lnk_7    48000Hz   S16_LE  1ch    960samples/frame
+		(I01) <-- lnk_9    48000Hz   S16_LE  1ch    960samples/frame
+		(O00) --> lnk_11   48000Hz   S16_LE  1ch    960samples/frame
+	blkinterleave_0
+		(I00) <-- lnk_10   48000Hz   S16_LE  1ch    960samples/frame
+		(I01) <-- lnk_11   48000Hz   S16_LE  1ch    960samples/frame
+		(O00) --> lnk_12   48000Hz   S16_LE  2ch    960samples/frame
+	blkalsaplayback_0
+		(I00) <-- lnk_12   48000Hz   S16_LE  2ch    960samples/frame
+```
 
+```bash
 $ lkdb setparam RouteA blkgain_0 1 0 0.5    # kanr-48000_16_2.pcm左声道的输出音量变低
 $ lkdb setparam RouteA blkgain_0 1 1 0.5    # kanr-48000_16_2.pcm右声道的输出音量变低
 $ lkdb setparam RouteA blkgain_0 1 0 0.0    # kanr-48000_16_2.pcm左声道的输出静音
@@ -380,6 +419,10 @@ Deleted RouteA
 需要用到“多路由”的场景是，当多个输入放在一个路由里运行会有机会相互阻塞时，那么它们就应该被分离到多个路由。例如，一个输入alsacapture，一个输入是echo-reference。
 
 ## 版本历史
+
+### 0.7.1
+
+- lkdb: 修复了`lkdb status --dot`输出的last block名字标签错误
 
 ### 0.7
 

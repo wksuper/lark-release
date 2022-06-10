@@ -275,7 +275,46 @@ For example, when running example2, in the other shell, you can tune example2's 
 
 ```bash
 $ lkdb status                               # Shows lark status
+RouteA is RUNNING, 625 frames processed OK, 0 error frame
+	blkfilereader_0
+		(O00) --> lnk_0    48000Hz   S16_LE  2ch    960samples/frame
+	blkdeinterleave_0
+		(I00) <-- lnk_0    48000Hz   S16_LE  2ch    960samples/frame
+		(O00) --> lnk_1    48000Hz   S16_LE  1ch    960samples/frame
+		(O01) --> lnk_2    48000Hz   S16_LE  1ch    960samples/frame
+	blkfilereader_1
+		(O00) --> lnk_3    48000Hz   S16_LE  2ch    960samples/frame
+	blkdeinterleave_1
+		(I01) <-- lnk_3    48000Hz   S16_LE  2ch    960samples/frame
+		(O00) --> lnk_4    48000Hz   S16_LE  1ch    960samples/frame
+		(O01) --> lnk_5    48000Hz   S16_LE  1ch    960samples/frame
+	blkgain_0
+		(I00) <-- lnk_1    48000Hz   S16_LE  1ch    960samples/frame
+		(I01) <-- lnk_2    48000Hz   S16_LE  1ch    960samples/frame
+		(O00) --> lnk_6    48000Hz   S16_LE  1ch    960samples/frame
+		(O01) --> lnk_7    48000Hz   S16_LE  1ch    960samples/frame
+	blkgain_1
+		(I00) <-- lnk_4    48000Hz   S16_LE  1ch    960samples/frame
+		(I01) <-- lnk_5    48000Hz   S16_LE  1ch    960samples/frame
+		(O00) --> lnk_8    48000Hz   S16_LE  1ch    960samples/frame
+		(O01) --> lnk_9    48000Hz   S16_LE  1ch    960samples/frame
+	blkmixer_0
+		(I00) <-- lnk_6    48000Hz   S16_LE  1ch    960samples/frame
+		(I01) <-- lnk_8    48000Hz   S16_LE  1ch    960samples/frame
+		(O00) --> lnk_10   48000Hz   S16_LE  1ch    960samples/frame
+	blkmixer_1
+		(I00) <-- lnk_7    48000Hz   S16_LE  1ch    960samples/frame
+		(I01) <-- lnk_9    48000Hz   S16_LE  1ch    960samples/frame
+		(O00) --> lnk_11   48000Hz   S16_LE  1ch    960samples/frame
+	blkinterleave_0
+		(I00) <-- lnk_10   48000Hz   S16_LE  1ch    960samples/frame
+		(I01) <-- lnk_11   48000Hz   S16_LE  1ch    960samples/frame
+		(O00) --> lnk_12   48000Hz   S16_LE  2ch    960samples/frame
+	blkalsaplayback_0
+		(I00) <-- lnk_12   48000Hz   S16_LE  2ch    960samples/frame
+```
 
+```bash
 $ lkdb setparam RouteA blkgain_0 1 0 0.5    # Output volume of kanr-48000_16_2.pcm left channel should be lower
 $ lkdb setparam RouteA blkgain_0 1 1 0.5    # Output volume of kanr-48000_16_2.pcm right channel should be lower
 $ lkdb setparam RouteA blkgain_0 1 0 0.0    # Output volume of kanr-48000_16_2.pcm left channel should be muted
@@ -371,6 +410,10 @@ For applying on real product, you need to call ***lark*** APIs to make your own 
 **A**: One route has one thread to process data. Normally "multi-first-blocks in one route" can work well. In this case, the multiple inputs are able to provide frames at the same pace, and they shouldn't be blocked by each other. For example, one input is alsacapture, one input is filereader. The scenario that needs multi-routes is, if the multiple inputs running in one route have chance to block each other, then they need to be separated into multi-routes. For example, one input is alsacapture, one input is echo-reference.
 
 ## Change Log
+
+### 0.7.1
+
+- lkdb: Fixed 'lkdb status --dot' last block name label error
 
 ### 0.7
 
