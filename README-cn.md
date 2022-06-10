@@ -3,14 +3,12 @@
 [English](https://gitee.com/wksuper/lark-release/blob/master/README.md) | [简体中文](https://gitee.com/wksuper/lark-release/blob/master/README-cn.md)
 
 ***lark***是一个轻量级但功能强大的软件音频DSP。它提供了一种灵活可扩展的方法来设计高性能、低MCPS、低延时的音频路由，让您可以像搭积木一样构建音频系统。
-主要特性（至v0.6版本）：
+主要特性（至v0.7版本）：
 
 - 支持实时操作音频路由
   - 实时加载/卸载块
   - 实时改变路径
   - 实时调节块参数
-  - 实时设定日志等级
-  - 实时转储每个块的数据
 - 支持预编译的输入/输出块
   - file-reader, file-writer, stream-in, stream-out, alsa-capture, alsa-playback, tinyalsa-capture, tinyalsa-playback, portaudio-capture, portaudio-playback
 - 支持预编译的算法块
@@ -19,6 +17,11 @@
 - 支持每块最多32个输入端点，32个输出端点
 - 支持基于帧的时间戳和基于采样点的时间戳
 - 支持实时调试工具
+  - 打印状态
+  - 打印路由快照到文件
+  - 实时设定日志等级
+  - 转储日志到文件
+  - 转储各个块的音频数据到文件
 - 支持多操作系统
   - Linux (x86_64), MacOS (x86_64)
 
@@ -241,6 +244,7 @@ $ lkdb setparam RouteA blksoxeffect_1 0 400    # 只有低于400Hz的音乐信�
 Usage:
   lkdb status
     - Print the lark running status
+    - Print dot code if enabled '--dot' option
   lkdb newroute ROUTENAME
     - Create a named route
   lkdb newblock ROUTENAME SOLIB ISFIRST ISLAST [ARGS]
@@ -288,6 +292,22 @@ $ lkdb setparam RouteA blkgain_0 1 1 1.0    # kanr-48000_16_2.pcm右声道的输
 
 $ lkdb setparam RouteA blkgain_1 1 0 1.0    # pacificrim-48000_16_2.pcm左声道的输出音量恢复
 $ lkdb setparam RouteA blkgain_1 1 1 1.0    # pacificrim-48000_16_2.pcm右声道的输出音量恢复
+```
+
+再举个例子，当例3运行时，在另外一个shell里，您可以通过`lkdb`抓取路由快照。
+
+```bash
+$ lkdb status --dot | dot -Tpng -o larkexample3.png
+```
+
+路由快照会被存成文件`larkexample3.png`.
+
+![larkexample3.png](./examples/larkexample3.png)
+
+注意：这个功能需要graphviz(dot)先安装到您的机器。
+
+```bash
+sudo apt install graphviz
 ```
 
 ## 创建您自己的音频路由
@@ -360,6 +380,11 @@ Deleted RouteA
 需要用到“多路由”的场景是，当多个输入放在一个路由里运行会有机会相互阻塞时，那么它们就应该被分离到多个路由。例如，一个输入alsacapture，一个输入是echo-reference。
 
 ## 版本历史
+
+### 0.7
+
+- lkdb: 增加了`lkdb status --dot`命令来输出dot代码，以把路由图形快照画出来。
+- 适配了klogging v1.1.2
 
 ### 0.6
 

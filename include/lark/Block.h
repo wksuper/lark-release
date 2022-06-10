@@ -82,7 +82,6 @@ public:
     size_t Index() const;
     bool IsActive() const;
     const FrameBuffer &FB() const;
-    const char *LinkName() const;
 
 protected:
     Endpoint();
@@ -98,6 +97,7 @@ private:
     friend class Link;
     friend class Block;
     friend class RouteImpl;
+    friend class LarkImpl;
 };
 
 class InputEndpoint : public Endpoint {

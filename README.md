@@ -3,14 +3,12 @@
 [English](https://gitee.com/wksuper/lark-release/blob/master/README.md) | [简体中文](https://gitee.com/wksuper/lark-release/blob/master/README-cn.md)
 
 ***lark*** is a lite but powerful software audio DSP. It provides a flexible and scalable way to design audio route(s) with high performance, low MCPS and low latency that allows you to build your audio system like building blocks.
-Main features (as of v0.6):
+Main features (as of v0.7):
 
 - Support realtime manipulating audio routes
   - Load/Unload blocks in real time
   - Change routes in real time
   - Tune block parameters in real time
-  - Set log level in real time
-  - Dump data of each block in real time
 - Support prebuilt I/O blocks
   - file-reader, file-writer, stream-in, stream-out, alsa-capture, alsa-playback, tinyalsa-capture, tinyalsa-playback, portaudio-capture, portaudio-playback
 - Support prebuilt algorithm blocks
@@ -19,6 +17,11 @@ Main features (as of v0.6):
 - Support up-to 32 input endpoints and 32 output endpoints for each block
 - Support timestamp for each frame / each sample
 - Support realtime debug tool
+  - Print status
+  - Print routes snapshot to a file
+  - Change log level
+  - Dump log to a file
+  - Dump each block's audio data to files
 - Support for multiple operating systems
   - Linux (x86_64), MacOS (x86_64)
 
@@ -240,6 +243,7 @@ When ***lark*** is running in a process, the debug utility `lkdb` can communicat
 Usage:
   lkdb status
     - Print the lark running status
+    - Print dot code if enabled '--dot' option
   lkdb newroute ROUTENAME
     - Create a named route
   lkdb newblock ROUTENAME SOLIB ISFIRST ISLAST [ARGS]
@@ -287,6 +291,22 @@ $ lkdb setparam RouteA blkgain_0 1 1 1.0    # Output volume of kanr-48000_16_2.p
 
 $ lkdb setparam RouteA blkgain_1 1 0 1.0    # Output volume of pacificrim-48000_16_2.pcm left channel should be recovered back
 $ lkdb setparam RouteA blkgain_1 1 1 1.0    # Output volume of pacificrim-48000_16_2.pcm right channel should be recovered back
+```
+
+For another example, when running example3, in the other shell, you can take a snapshot of the routes via `lkdb`.
+
+```bash
+$ lkdb status --dot | dot -Tpng -o larkexample3.png
+```
+
+The routes snapshot will be saved to `larkexample3.png`.
+
+![larkexample3.png](./examples/larkexample3.png)
+
+Note: This requires graphviz(dot) to be installed on your machine.
+
+```bash
+sudo apt install graphviz
 ```
 
 ## Make Your Own Audio Route(s)
@@ -351,6 +371,11 @@ For applying on real product, you need to call ***lark*** APIs to make your own 
 **A**: One route has one thread to process data. Normally "multi-first-blocks in one route" can work well. In this case, the multiple inputs are able to provide frames at the same pace, and they shouldn't be blocked by each other. For example, one input is alsacapture, one input is filereader. The scenario that needs multi-routes is, if the multiple inputs running in one route have chance to block each other, then they need to be separated into multi-routes. For example, one input is alsacapture, one input is echo-reference.
 
 ## Change Log
+
+### 0.7
+
+- lkdb: Added `lkdb status --dot` that can output dot code by which the routes graphic snapshot can be drawed
+- Adapted for klogging v1.1.2
 
 ### 0.6
 

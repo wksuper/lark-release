@@ -27,7 +27,7 @@
 
 #define KLOG_MAJOR_VER  1  /* Increases when any API definition is changed */
 #define KLOG_MINOR_VER  1  /* Increases when new features are added */
-#define KLOG_PATCH_VER  0  /* Increases when bugs are fixed */
+#define KLOG_PATCH_VER  2  /* Increases when bugs are fixed */
 #if (KLOG_MAJOR_VER > UINT8_MAX) || (KLOG_MINOR_VER > UINT8_MAX) || (KLOG_PATCH_VER > UINT8_MAX)
 #error Wrong version number
 #endif
@@ -88,6 +88,11 @@ KLOGGING_API void _klogging_set_level(enum KLoggingLevel level);
 KLOGGING_API void _klogging_print(KLoggingOptions enOpts, KLoggingOptions disOpts, const char *lineEnd,
 	char type, const char *file, int line, const char *function, const char *logTag,
 	const char *format, ...);
+#define _klogging_print_with_version_check(...) \
+	do { \
+		assert(_klogging_version_compatible(KLOG_MAJOR_VER)); \
+		_klogging_print(__VA_ARGS__); \
+	} while (0)
 
 // KLOG_SET() is used in the entry of main(int argc, char *argv[]).
 // This enables parameters to be set when launching the program who uses klogging.
@@ -132,13 +137,13 @@ static inline const char *KLOG_VERSION() { return _klogging_version(); }
 
 // klogx() APIs are used when some options need to be temporarily turned ON/OFF for this message
 // or a special line-end string(e.g. "") temporarily needed for this message.
-#define kloga(enOpts, disOpts, lineEnd, ...) _klogging_print(enOpts, disOpts, lineEnd, 'A', __FILE__, __LINE__, __FUNCTION__, LOG_TAG, __VA_ARGS__)
-#define klogf(enOpts, disOpts, lineEnd, ...) _klogging_print(enOpts, disOpts, lineEnd, 'F', __FILE__, __LINE__, __FUNCTION__, LOG_TAG, __VA_ARGS__)
-#define kloge(enOpts, disOpts, lineEnd, ...) _klogging_print(enOpts, disOpts, lineEnd, 'E', __FILE__, __LINE__, __FUNCTION__, LOG_TAG, __VA_ARGS__)
-#define klogw(enOpts, disOpts, lineEnd, ...) _klogging_print(enOpts, disOpts, lineEnd, 'W', __FILE__, __LINE__, __FUNCTION__, LOG_TAG, __VA_ARGS__)
-#define klogi(enOpts, disOpts, lineEnd, ...) _klogging_print(enOpts, disOpts, lineEnd, 'I', __FILE__, __LINE__, __FUNCTION__, LOG_TAG, __VA_ARGS__)
-#define klogd(enOpts, disOpts, lineEnd, ...) _klogging_print(enOpts, disOpts, lineEnd, 'D', __FILE__, __LINE__, __FUNCTION__, LOG_TAG, __VA_ARGS__)
-#define klogv(enOpts, disOpts, lineEnd, ...) _klogging_print(enOpts, disOpts, lineEnd, 'V', __FILE__, __LINE__, __FUNCTION__, LOG_TAG, __VA_ARGS__)
+#define kloga(enOpts, disOpts, lineEnd, ...) _klogging_print_with_version_check(enOpts, disOpts, lineEnd, 'A', __FILE__, __LINE__, __FUNCTION__, LOG_TAG, __VA_ARGS__)
+#define klogf(enOpts, disOpts, lineEnd, ...) _klogging_print_with_version_check(enOpts, disOpts, lineEnd, 'F', __FILE__, __LINE__, __FUNCTION__, LOG_TAG, __VA_ARGS__)
+#define kloge(enOpts, disOpts, lineEnd, ...) _klogging_print_with_version_check(enOpts, disOpts, lineEnd, 'E', __FILE__, __LINE__, __FUNCTION__, LOG_TAG, __VA_ARGS__)
+#define klogw(enOpts, disOpts, lineEnd, ...) _klogging_print_with_version_check(enOpts, disOpts, lineEnd, 'W', __FILE__, __LINE__, __FUNCTION__, LOG_TAG, __VA_ARGS__)
+#define klogi(enOpts, disOpts, lineEnd, ...) _klogging_print_with_version_check(enOpts, disOpts, lineEnd, 'I', __FILE__, __LINE__, __FUNCTION__, LOG_TAG, __VA_ARGS__)
+#define klogd(enOpts, disOpts, lineEnd, ...) _klogging_print_with_version_check(enOpts, disOpts, lineEnd, 'D', __FILE__, __LINE__, __FUNCTION__, LOG_TAG, __VA_ARGS__)
+#define klogv(enOpts, disOpts, lineEnd, ...) _klogging_print_with_version_check(enOpts, disOpts, lineEnd, 'V', __FILE__, __LINE__, __FUNCTION__, LOG_TAG, __VA_ARGS__)
 
 // KLOGX() APIs are used for normal message print.
 
