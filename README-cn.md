@@ -339,7 +339,7 @@ $ lkdb setparam RouteA blkgain_1 1 1 1.0    # pacificrim-48000_16_2.pcm右声道
 $ lkdb status --dot | dot -Tpng -o larkexample3.png
 ```
 
-路由快照会被存成文件`larkexample3.png`.
+路由快照会被存成文件`larkexample3.png`。
 
 ![larkexample3.png](./examples/larkexample3.png)
 
@@ -419,6 +419,13 @@ Deleted RouteA
 需要用到“多路由”的场景是，当多个输入放在一个路由里运行会有机会相互阻塞时，那么它们就应该被分离到多个路由。例如，一个输入alsacapture，一个输入是echo-reference。
 
 ## 版本历史
+
+### 0.7.2
+
+- lkdb: 修复了`lkdb status --dot`当有多个路由时的画图问题
+- 支持了FIFO名字
+- lkdb: `lkdb status --dot`能够画出路由之间的FIFO连接
+- BlkDelay: 支持了默认的delay值设定
 
 ### 0.7.1
 

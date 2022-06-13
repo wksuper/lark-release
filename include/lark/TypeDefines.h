@@ -123,47 +123,59 @@ static inline samples_t BytesToSamples(SampleFormat format, unsigned int chNum, 
     }
 }
 
+class Block;
+
 class DataProducer {
 public:
-    DataProducer() : m_blocking(true) { }
+    DataProducer() : m_blocking(true),  m_block(nullptr) { }
     inline int Produce(void *data, samples_t samples, int64_t *timestamp)
     {
         return Produce(data, samples, m_blocking, timestamp);
     }
-    void SetBlocking(bool blocking)
-    {
-        m_blocking = blocking;
-    }
+    void SetBlocking(bool blocking) { m_blocking = blocking; }
     virtual ~DataProducer() {}
 
 private:
     virtual int Produce(void *data, samples_t samples, bool blocking, int64_t *timestamp) = 0;
+
     bool m_blocking;
+    Block *m_block;
+
+    friend class BlkStreamIn;
+    friend class LarkImpl;
 };
 
 class DataConsumer {
 public:
-    DataConsumer() : m_blocking(true) { }
+    DataConsumer() : m_blocking(true), m_block(nullptr) { }
     inline int Consume(const void *data, samples_t samples, int64_t timestamp)
     {
         return Consume(data, samples, m_blocking, timestamp);
     }
-    void SetBlocking(bool blocking)
-    {
-        m_blocking = blocking;
-    }
-
+    void SetBlocking(bool blocking) { m_blocking = blocking; }
     virtual ~DataConsumer() {}
 
 private:
     virtual int Consume(const void *data, samples_t samples, bool blocking, int64_t timestamp) = 0;
+
     bool m_blocking;
+    Block *m_block;
+
+    friend class BlkStreamOut;
+    friend class LarkImpl;
 };
 
 class FIFO : public DataProducer, public DataConsumer {
 public:
     virtual void Shutdown() = 0;
     virtual ~FIFO() {}
+
+protected:
+    const char *Name() const { return m_name.c_str(); }
+
+private:
+    std::string m_name;
+    friend class LarkImpl;
 };
 
 }

@@ -411,6 +411,13 @@ For applying on real product, you need to call ***lark*** APIs to make your own 
 
 ## Change Log
 
+### 0.7.2
+
+- lkdb: Fixed `lkdb status --dot` when multiple routes are presenting
+- Supported FIFO name
+- lkdb: `lkdb status --dot` is able to draw the FIFO connection between routes
+- BlkDelay: Supported default delay value
+
 ### 0.7.1
 
 - lkdb: Fixed 'lkdb status --dot' last block name label error
