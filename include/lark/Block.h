@@ -138,6 +138,8 @@ private:
     void SetName(const std::string &routeName, const std::string &name, const std::string *dumpPath);
     void CloseDump();
 
+    virtual const char *Subname() const;
+
     int BaseOnInEpLinked(size_t epIdx);
     virtual int OnInEpLinked(size_t epIdx);
 

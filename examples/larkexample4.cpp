@@ -48,14 +48,14 @@ int main()
     const unsigned int frameDuration_ms = 20;
     const lark::samples_t frameSizeInSamples = frameDuration_ms * rate / 1000;
 
-    // 1. Create the playback route named RouteA
+    // Create the playback route named RouteA
     lark::Route *route = lark::Lark::Instance().NewRoute("RouteA");
     if (!route) {
         KLOGE("Failed to create route");
         return -1;
     }
 
-    // 2. Create RouteA's blocks
+    // Create RouteA's blocks
     const char *soFileName = "libblkfilereader" SUFIX;
     lark::Parameters args;
     args.push_back("./examples/kanr-48000_16_2.pcm");
@@ -65,20 +65,44 @@ int main()
         return -1;
     }
 
-    soFileName = "libblkpaplayback" SUFIX;
-    lark::Block *blkPAPlayback = route->NewBlock(soFileName, false, true);
-    if (!blkPAPlayback) {
+    soFileName = "libblkformatadapter" SUFIX;
+    lark::Block *blkFormatAdapter = route->NewBlock(soFileName, false, false);
+    if (!blkFormatAdapter) {
         KLOGE("Failed to new a block from %s", soFileName);
         return -1;
     }
 
-    // 3. Create RouteA's links
-    if (!route->NewLink(rate, format, chNum, frameSizeInSamples, blkFileReader, 0, blkPAPlayback, 0)) {
+    soFileName = "libblksoxeffect" SUFIX;
+    args.clear();
+    args.push_back("oops");
+    lark::Block *blkSoxOops = route->NewBlock(soFileName, false, false, args);
+    if (!blkSoxOops) {
+        KLOGE("Failed to new a block from %s", soFileName);
+        return -1;
+    }
+
+    soFileName = "libblkpaplayback" SUFIX;
+    lark::Block *blkPlayback = route->NewBlock(soFileName, false, true);
+    if (!blkPlayback) {
+        KLOGE("Failed to new a block from %s", soFileName);
+        return -1;
+    }
+
+    // Create RouteA's links
+    if (!route->NewLink(rate, format, chNum, frameSizeInSamples, blkFileReader, 0, blkFormatAdapter, 0)) {
+        KLOGE("Failed to new a link");
+        return -1;
+    }
+    if (!route->NewLink(rate, lark::SampleFormat_S32, chNum, frameSizeInSamples, blkFormatAdapter, 0, blkSoxOops, 0)) {
+        KLOGE("Failed to new a link");
+        return -1;
+    }
+    if (!route->NewLink(rate, lark::SampleFormat_S32, chNum, frameSizeInSamples, blkSoxOops, 0, blkPlayback, 0)) {
         KLOGE("Failed to new a link");
         return -1;
     }
 
-    // 4. Start() or Stop()
+    // Start() or Stop()
     if (route->Start() < 0) {
         KLOGE("Failed to start route");
         return -1;
@@ -100,7 +124,7 @@ again:
         }
     }
 
-    // 5. Automatically release resources
+    // Automatically release resources
 
     return 0;
 }

@@ -3,7 +3,7 @@
 [English](https://gitee.com/wksuper/lark-release/blob/master/README.md) | [简体中文](https://gitee.com/wksuper/lark-release/blob/master/README-cn.md)
 
 ***lark***是一个轻量级但功能强大的软件音频DSP。它提供了一种灵活可扩展的方法来设计高性能、低MCPS、低延时的音频路由，让您可以像搭积木一样构建音频系统。
-主要特性（至v0.7版本）：
+主要特性（至v0.8版本）：
 
 - 支持实时操作音频路由
   - 实时加载/卸载块
@@ -12,7 +12,7 @@
 - 支持预编译的输入/输出块
   - file-reader, file-writer, stream-in, stream-out, alsa-capture, alsa-playback, tinyalsa-capture, tinyalsa-playback, portaudio-capture, portaudio-playback
 - 支持预编译的算法块
-  - gain, mixer(duplicator), interleave, de-interleave, format-adapter, delay, align, buffer, speex-resampler, speex-preprocessor, soundtouch, sox-effect
+  - gain, mixer(duplicator), multiplexer, interleave, de-interleave, format-adapter, delay, align, buffer, speex-resampler, speex-preprocessor, soundtouch, sox-effect
 - 支持无限客制化块
 - 支持每块最多32个输入端点，32个输出端点
 - 支持基于帧的时间戳和基于采样点的时间戳
@@ -419,6 +419,15 @@ Deleted RouteA
 需要用到“多路由”的场景是，当多个输入放在一个路由里运行会有机会相互阻塞时，那么它们就应该被分离到多个路由。例如，一个输入alsacapture，一个输入是echo-reference。
 
 ## 版本历史
+
+### 0.8
+
+- Sox效果器(BlkSoxEffect): 支持了交错声道
+- 路由(Route): 修复了当处于BROKEN_RUNNING时不能start的问题
+- 例4: 应用了sox oops效果器
+- 混音器(BlkMixer): 修复了浮点混合时溢出问题
+- 块(Block): 支持了子名字
+- 支持了多路复用器(BlkMultiplexer)
 
 ### 0.7.2
 

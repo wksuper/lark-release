@@ -3,7 +3,7 @@
 [English](https://gitee.com/wksuper/lark-release/blob/master/README.md) | [简体中文](https://gitee.com/wksuper/lark-release/blob/master/README-cn.md)
 
 ***lark*** is a lite but powerful software audio DSP. It provides a flexible and scalable way to design audio route(s) with high performance, low MCPS and low latency that allows you to build your audio system like building blocks.
-Main features (as of v0.7):
+Main features (as of v0.8):
 
 - Support realtime manipulating audio routes
   - Load/Unload blocks in real time
@@ -12,7 +12,7 @@ Main features (as of v0.7):
 - Support prebuilt I/O blocks
   - file-reader, file-writer, stream-in, stream-out, alsa-capture, alsa-playback, tinyalsa-capture, tinyalsa-playback, portaudio-capture, portaudio-playback
 - Support prebuilt algorithm blocks
-  - gain, mixer(duplicator), interleave, de-interleave, format-adapter, delay, align, buffer, speex-resampler, speex-preprocessor, soundtouch, sox-effect
+  - gain, mixer(duplicator), multiplexer, interleave, de-interleave, format-adapter, delay, align, buffer, speex-resampler, speex-preprocessor, soundtouch, sox-effect
 - Support customizing blocks extensively
 - Support up-to 32 input endpoints and 32 output endpoints for each block
 - Support timestamp for each frame / each sample
@@ -410,6 +410,15 @@ For applying on real product, you need to call ***lark*** APIs to make your own 
 **A**: One route has one thread to process data. Normally "multi-first-blocks in one route" can work well. In this case, the multiple inputs are able to provide frames at the same pace, and they shouldn't be blocked by each other. For example, one input is alsacapture, one input is filereader. The scenario that needs multi-routes is, if the multiple inputs running in one route have chance to block each other, then they need to be separated into multi-routes. For example, one input is alsacapture, one input is echo-reference.
 
 ## Change Log
+
+### 0.8
+
+- BlkSoxEffect: Supported interleaved channels
+- Route: Fixed unable to start when BROKEN_RUNNING
+- larkexample4: Applied sox oops effect
+- BlkMixer: Fixed float mixing overflow
+- Block: Supported subname
+- Supported BlkMultiplexer
 
 ### 0.7.2
 
