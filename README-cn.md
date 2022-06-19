@@ -23,7 +23,7 @@
   - 转储日志到文件
   - 转储各个块的音频数据到文件
 - 支持多操作系统
-  - Linux (x86_64), MacOS (x86_64)
+  - Linux (x86_64), MacOS (x86_64), Android (aarch64)
 
 ## 开始
 
@@ -419,6 +419,11 @@ Deleted RouteA
 需要用到“多路由”的场景是，当多个输入放在一个路由里运行会有机会相互阻塞时，那么它们就应该被分离到多个路由。例如，一个输入alsacapture，一个输入是echo-reference。
 
 ## 版本历史
+
+### 0.9
+
+- 路由(Route): 支持了组操作，例如连续NewBlock()和NewLink()作为一组
+- 支持了aarch64-android
 
 ### 0.8
 

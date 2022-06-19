@@ -85,7 +85,7 @@ public:
                 bool first;
                 bool last;
                 const Parameters *args;
-                Block* ret;
+                Block **ret;
             } newBlockData;
 
             struct NewLinkData {
@@ -93,11 +93,11 @@ public:
                 SampleFormat format;
                 unsigned int chNum;
                 samples_t frameSizeInSamples;
-                Block *sourceBlk;
+                Block **sourceBlk;
                 size_t sourceBlkOutEpIdx;
-                Block *sinkBlk;
+                Block **sinkBlk;
                 size_t sinkBlkInEpIdx;
-                Link* ret;
+                Link *ret;
             } newLinkData;
             struct StartData {
                 int ret;

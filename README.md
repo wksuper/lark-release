@@ -3,7 +3,7 @@
 [English](https://gitee.com/wksuper/lark-release/blob/master/README.md) | [简体中文](https://gitee.com/wksuper/lark-release/blob/master/README-cn.md)
 
 ***lark*** is a lite but powerful software audio DSP. It provides a flexible and scalable way to design audio route(s) with high performance, low MCPS and low latency that allows you to build your audio system like building blocks.
-Main features (as of v0.8):
+Main features (as of v0.9):
 
 - Support realtime manipulating audio routes
   - Load/Unload blocks in real time
@@ -23,7 +23,7 @@ Main features (as of v0.8):
   - Dump log to a file
   - Dump each block's audio data to files
 - Support for multiple operating systems
-  - Linux (x86_64), MacOS (x86_64)
+  - Linux (x86_64), MacOS (x86_64), Android (aarch64)
 
 ## Get Started
 
@@ -410,6 +410,11 @@ For applying on real product, you need to call ***lark*** APIs to make your own 
 **A**: One route has one thread to process data. Normally "multi-first-blocks in one route" can work well. In this case, the multiple inputs are able to provide frames at the same pace, and they shouldn't be blocked by each other. For example, one input is alsacapture, one input is filereader. The scenario that needs multi-routes is, if the multiple inputs running in one route have chance to block each other, then they need to be separated into multi-routes. For example, one input is alsacapture, one input is echo-reference.
 
 ## Change Log
+
+### 0.9
+
+- Route: Supported a group of actions for NewBlock() NewLink()
+- Supported aarch64-android
 
 ### 0.8
 

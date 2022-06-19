@@ -35,6 +35,7 @@
 #include <lark/TypeDefines.h>
 #include <lark/Block.h>
 #include <lark/Route.h>
+#include <lark/Fifo.h>
 
 namespace lark {
 
