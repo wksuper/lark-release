@@ -27,7 +27,7 @@
 
 #define KLOG_MAJOR_VER  1  /* Increases when any API definition is changed */
 #define KLOG_MINOR_VER  1  /* Increases when new features are added */
-#define KLOG_PATCH_VER  2  /* Increases when bugs are fixed */
+#define KLOG_PATCH_VER  3  /* Increases when bugs are fixed */
 #if (KLOG_MAJOR_VER > UINT8_MAX) || (KLOG_MINOR_VER > UINT8_MAX) || (KLOG_PATCH_VER > UINT8_MAX)
 #error Wrong version number
 #endif

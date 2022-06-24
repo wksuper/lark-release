@@ -3,7 +3,7 @@
 [English](https://gitee.com/wksuper/lark-release/blob/master/README.md) | [简体中文](https://gitee.com/wksuper/lark-release/blob/master/README-cn.md)
 
 ***lark*** is a lite but powerful software audio DSP. It provides a flexible and scalable way to design audio route(s) with high performance, low MCPS and low latency that allows you to build your audio system like building blocks.
-Main features (as of v0.9):
+Main features (as of v0.10):
 
 - Support realtime manipulating audio routes
   - Load/Unload blocks in real time
@@ -12,7 +12,7 @@ Main features (as of v0.9):
 - Support prebuilt I/O blocks
   - file-reader, file-writer, stream-in, stream-out, alsa-capture, alsa-playback, tinyalsa-capture, tinyalsa-playback, portaudio-capture, portaudio-playback
 - Support prebuilt algorithm blocks
-  - gain, mixer(duplicator), multiplexer, interleave, de-interleave, format-adapter, delay, align, buffer, speex-resampler, speex-preprocessor, soundtouch, sox-effect
+  - gain, mixer, duplicator, multiplexer, interleave, de-interleave, format-adapter, delay, align, buffer, speex-resampler, speex-preprocessor, soundtouch, sox-effect
 - Support customizing blocks extensively
 - Support up-to 32 input endpoints and 32 output endpoints for each block
 - Support timestamp for each frame / each sample
@@ -345,7 +345,7 @@ The routes snapshot will be saved to `larkexample3.png`.
 Note: This requires graphviz(dot) to be installed on your machine.
 
 ```bash
-sudo apt install graphviz
+$ sudo apt install graphviz
 ```
 
 ## Make Your Own Audio Route(s)
@@ -387,6 +387,9 @@ Deleted RouteA
 
 The source code of this example is shown in [larkexample0.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample0.cpp).
 
+Furthermore, [Author's blog: <My Engineer Daddy - Audio Application DIY series>](https://blog.csdn.net/weixin_44278307?type=blog) demonstrated by using ***lark*** how to deal with the daily audio related affairs of life through a series of short stories.
+
+
 ### Step 3
 
 For applying on real product, you need to call ***lark*** APIs to make your own audio route(s) in your process. [Examples](https://gitee.com/wksuper/lark-release/tree/master/examples) have been listed. Refer to [User Manual](https://gitee.com/wksuper/lark-release/blob/master/MANUAL.md) for detail.
@@ -410,6 +413,11 @@ For applying on real product, you need to call ***lark*** APIs to make your own 
 **A**: One route has one thread to process data. Normally "multi-first-blocks in one route" can work well. In this case, the multiple inputs are able to provide frames at the same pace, and they shouldn't be blocked by each other. For example, one input is alsacapture, one input is filereader. The scenario that needs multi-routes is, if the multiple inputs running in one route have chance to block each other, then they need to be separated into multi-routes. For example, one input is alsacapture, one input is echo-reference.
 
 ## Change Log
+
+### 0.10
+
+- Supported `BlkDuplicator` block to duplicate an endpoint with arbitrary channel number(mono or multi-channels).
+- Adapted for klogging v1.1.3
 
 ### 0.9
 

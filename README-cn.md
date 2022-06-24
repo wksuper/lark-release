@@ -3,7 +3,7 @@
 [English](https://gitee.com/wksuper/lark-release/blob/master/README.md) | [简体中文](https://gitee.com/wksuper/lark-release/blob/master/README-cn.md)
 
 ***lark***是一个轻量级但功能强大的软件音频DSP。它提供了一种灵活可扩展的方法来设计高性能、低MCPS、低延时的音频路由，让您可以像搭积木一样构建音频系统。
-主要特性（至v0.8版本）：
+主要特性（至v0.10版本）：
 
 - 支持实时操作音频路由
   - 实时加载/卸载块
@@ -12,7 +12,7 @@
 - 支持预编译的输入/输出块
   - file-reader, file-writer, stream-in, stream-out, alsa-capture, alsa-playback, tinyalsa-capture, tinyalsa-playback, portaudio-capture, portaudio-playback
 - 支持预编译的算法块
-  - gain, mixer(duplicator), multiplexer, interleave, de-interleave, format-adapter, delay, align, buffer, speex-resampler, speex-preprocessor, soundtouch, sox-effect
+  - gain, mixer, duplicator, multiplexer, interleave, de-interleave, format-adapter, delay, align, buffer, speex-resampler, speex-preprocessor, soundtouch, sox-effect
 - 支持无限客制化块
 - 支持每块最多32个输入端点，32个输出端点
 - 支持基于帧的时间戳和基于采样点的时间戳
@@ -346,7 +346,7 @@ $ lkdb status --dot | dot -Tpng -o larkexample3.png
 注意：这个功能需要graphviz(dot)先安装到您的机器。
 
 ```bash
-sudo apt install graphviz
+$ sudo apt install graphviz
 ```
 
 ## 创建您自己的音频路由
@@ -390,6 +390,8 @@ Deleted RouteA
 
 这个例子的源代码在此：[larkexample0.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample0.cpp)。
 
+另外，[作者的博客文章：我的工程师爸爸-音频应用DIY系列](https://blog.csdn.net/weixin_44278307?type=blog)通过小故事展示了利用lark来编程解决生活中遇到的音频问题。
+
 ### 第3步
 
 要应用在真实产品中，您需要在您的进程里调用 ***lark*** 的API来创建您自己的音频路由。[样例](https://gitee.com/wksuper/lark-release/tree/master/examples)已经列出。参考[用户手册](https://gitee.com/wksuper/lark-release/blob/master/MANUAL.md)以获取更多信息。
@@ -419,6 +421,11 @@ Deleted RouteA
 需要用到“多路由”的场景是，当多个输入放在一个路由里运行会有机会相互阻塞时，那么它们就应该被分离到多个路由。例如，一个输入alsacapture，一个输入是echo-reference。
 
 ## 版本历史
+
+### 0.10
+
+- 增加了BlkDuplicator块，以复制任意声道（单声道或多声道）的端点。
+- 适配了klogging v1.1.3
 
 ### 0.9
 
