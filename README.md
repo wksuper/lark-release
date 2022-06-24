@@ -235,6 +235,10 @@ $ lkdb setparam RouteA blksoxeffect_1 0 400    # Only lower than 400Hz music sig
 
 The source code of this example is shown in [larkexample7.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample7.cpp).
 
+#### Furthermore Examples
+
+[Author's blog: <My Engineer Daddy - Audio Application DIY Series>](https://blog.csdn.net/weixin_44278307?type=blog) demonstrated by using ***lark*** how to deal with the daily audio related affairs of life through a series of short stories.
+
 ## Debug with `lkdb` in Realtime
 
 When ***lark*** is running in a process, the debug utility `lkdb` can communicate with it to get info from ***lark*** and send command to ***lark***.
@@ -386,9 +390,6 @@ Deleted RouteA
 ```
 
 The source code of this example is shown in [larkexample0.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample0.cpp).
-
-Furthermore, [Author's blog: <My Engineer Daddy - Audio Application DIY series>](https://blog.csdn.net/weixin_44278307?type=blog) demonstrated by using ***lark*** how to deal with the daily audio related affairs of life through a series of short stories.
-
 
 ### Step 3
 

@@ -191,7 +191,6 @@ $ lkdb setparam RouteA blksoundtouch_0 3 1.0    # 播放速率变正常
 
 这个例子的源代码在此：[larkexample5.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample5.cpp)。
 
-
 #### 例7：运行一个带SoX效果器的单播放路由
 
 ```
@@ -235,6 +234,10 @@ $ lkdb setparam RouteA blksoxeffect_1 0 400    # 只有低于400Hz的音乐信�
 ```
 
 这个例子的源代码在此：[larkexample7.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample7.cpp)。
+
+#### 更多的例子
+
+[作者的博客文章：<我的工程师爸爸-音频应用DIY系列>](https://blog.csdn.net/weixin_44278307?type=blog)通过小故事展示了利用lark来编程解决生活中遇到的音频问题。
 
 ## 用`lkdb`实时调试
 
@@ -389,8 +392,6 @@ Deleted RouteA
 ```
 
 这个例子的源代码在此：[larkexample0.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample0.cpp)。
-
-另外，[作者的博客文章：我的工程师爸爸-音频应用DIY系列](https://blog.csdn.net/weixin_44278307?type=blog)通过小故事展示了利用lark来编程解决生活中遇到的音频问题。
 
 ### 第3步
 
