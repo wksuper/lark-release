@@ -2,7 +2,7 @@
 
 [English](https://gitee.com/wksuper/lark-release/blob/master/README.md) | [简体中文](https://gitee.com/wksuper/lark-release/blob/master/README-cn.md)
 
-***lark*** is a lite but powerful software audio DSP. It provides a flexible and scalable way to design audio route(s) with high performance, low MCPS and low latency that allows you to build your audio system like building blocks.
+***lark*** is a free, lite and powerful software audio DSP. It provides a flexible and scalable way to design audio route(s) with high efficiency, small footprint and low latency that enables you to build your audio system like building blocks.
 Main features (as of v0.10):
 
 - Support realtime manipulating audio routes
@@ -12,7 +12,10 @@ Main features (as of v0.10):
 - Support prebuilt I/O blocks
   - file-reader, file-writer, stream-in, stream-out, alsa-capture, alsa-playback, tinyalsa-capture, tinyalsa-playback, portaudio-capture, portaudio-playback
 - Support prebuilt algorithm blocks
-  - gain, mixer, duplicator, multiplexer, interleave, de-interleave, format-adapter, delay, align, buffer, speex-resampler, speex-preprocessor, soundtouch, sox-effect
+  - gain, mixer, duplicator, multiplexer, interleave, de-interleave, format-adapter, delay, align, buffer
+  - speexdsp algo: speex-resampler, speex-preprocessor
+  - soundtouch algo: pitch, tempo, rate
+  - sox-effects: vol, flanger, tremolo, echos, chorus, oops, equalizer, highpass, lowpass, etc.
 - Support customizing blocks extensively
 - Support up-to 32 input endpoints and 32 output endpoints for each block
 - Support timestamp for each frame / each sample
@@ -22,7 +25,7 @@ Main features (as of v0.10):
   - Change log level
   - Dump log to a file
   - Dump each block's audio data to files
-- Support for multiple operating systems
+- Cross platform
   - Linux (x86_64), MacOS (x86_64), Android (aarch64)
 
 ## Get Started
@@ -216,7 +219,7 @@ $ sudo apt install libsox-dev
 $ sudo apt install libportaudio2
 ```
 
-Run example5:
+Run example7:
 
 ```bash
 $ x86_64-linux-gnu/bin/larkexample7
@@ -228,14 +231,13 @@ In the other shell,
 
 ```bash
 $ lkdb status                                  # Shows lark status
-
 $ lkdb setparam RouteA blksoxeffect_0 0 400    # Only higher than 400Hz music signals go to left speaker
 $ lkdb setparam RouteA blksoxeffect_1 0 400    # Only lower than 400Hz music signals go to right speaker
 ```
 
 The source code of this example is shown in [larkexample7.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample7.cpp).
 
-#### Furthermore Examples
+### Furthermore Examples
 
 [Author's blog: <My Engineer Daddy - Audio Application DIY Series>](https://blog.csdn.net/weixin_44278307?type=blog) demonstrated by using ***lark*** how to deal with the daily audio related affairs of life through a series of short stories.
 
@@ -245,7 +247,7 @@ When ***lark*** is running in a process, the debug utility `lkdb` can communicat
 
 ```
 Usage:
-  lkdb status
+  lkdb status [--dot]
     - Print the lark running status
     - Print dot code if enabled '--dot' option
   lkdb newroute ROUTENAME

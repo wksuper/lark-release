@@ -134,7 +134,7 @@ The BlkDelay block is able to add delay between the input endpoints and the outp
 - SO Name
   - "libblkdelay.so"
 - Creation Arguments
-  - None
+  - DELAYTIME (in micro-second, optional, default is 0us)
 - SetParameter Arguments
   - PARAMID 1: set delay
   - PARAMS: DELAYTIME (in micro-second)
@@ -381,6 +381,57 @@ This block depends on `libSoundTouch.so`.
   - PARAMID 3: set rate
   - PARAMS: RATE
     - Normal RATE=1.0, smaller values represent slower rate, larger faster rates
+- GetParameter Arguments
+  - None
+- Pending by No Input?
+  - Yes
+
+### 3.19 BlkSoxEffect
+
+The BlkSoxEffect block integrated most of the SoX effects known as vol, flanger, tremolo, echos, chorus, oops, equalizer, highpass, lowpass, etc.
+One BlkSoxEffect instance applies one effect that determined by parameter string specified when instance creation.
+Internally, the data from the input endpoint index N will go to the output endpoint with the same index N. i.e. I00 goes to O00, I01 goes to O01, and so on.
+This block depends on `libsox.so`.
+
+- SO Name
+  - "libblksoxeffect.so"
+- Creation Arguments
+  - EFFECTNAME
+- SetParameter Arguments
+  - PARAMID: [0, 31] means the input endpoint index the parameters to be applied on
+  - PARAMS: same as sox effects parameters, refer to `sox --help-effect all`
+- GetParameter Arguments
+  - None
+- Pending by No Input?
+  - Yes
+
+### 3.20 BlkMultiplexer
+
+The BlkMultiplexer block selects one of the inputs and pass it to the unique output.
+
+- SO Name
+  - "libblkmultiplexer.so"
+- Creation Arguments
+  - None
+- SetParameter Arguments
+  - PARAMID: [0, 31] means the input endpoint index to be selected, -1 means selecting none of the inputs (i.e. selecting mute)
+  - PARAMS: None
+- GetParameter Arguments
+  - None
+- Pending by No Input?
+  - Yes
+
+### 3.21 BlkDuplicator
+
+The BlkDuplicator block duplicates the unique input to each output.
+
+- SO Name
+  - "libblkduplicator.so"
+- Creation Arguments
+  - None
+- SetParameter Arguments
+  - PARAMID: None
+  - PARAMS: None
 - GetParameter Arguments
   - None
 - Pending by No Input?

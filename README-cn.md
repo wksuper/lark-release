@@ -2,7 +2,7 @@
 
 [English](https://gitee.com/wksuper/lark-release/blob/master/README.md) | [简体中文](https://gitee.com/wksuper/lark-release/blob/master/README-cn.md)
 
-***lark***是一个轻量级但功能强大的软件音频DSP。它提供了一种灵活可扩展的方法来设计高性能、低MCPS、低延时的音频路由，让您可以像搭积木一样构建音频系统。
+***lark***是一个免费、轻量、功能强大的软件音频DSP。它提供了一种灵活可扩展的方法来设计效能高、空间占用小、延时低的音频路由，让您可以像搭积木一样构建音频系统。
 主要特性（至v0.10版本）：
 
 - 支持实时操作音频路由
@@ -10,9 +10,12 @@
   - 实时改变路径
   - 实时调节块参数
 - 支持预编译的输入/输出块
-  - file-reader, file-writer, stream-in, stream-out, alsa-capture, alsa-playback, tinyalsa-capture, tinyalsa-playback, portaudio-capture, portaudio-playback
+  - 文件读取(file-reader), 文件写入(file-writer), 流输入(stream-in), 流输出(stream-out), alsa录音, alsa播放, tinyalsa录音, tinyalsa播放, portaudio录音, portaudio播放
 - 支持预编译的算法块
-  - gain, mixer, duplicator, multiplexer, interleave, de-interleave, format-adapter, delay, align, buffer, speex-resampler, speex-preprocessor, soundtouch, sox-effect
+  - 增益(gain), 混音器(mixer), 复制器(duplicator), 多路复用器(multiplexer), 声道交织器(interleave), 声道分离器(de-interleave), 格式适配器(format-adapter), 延时器(delay), 对齐(align), 缓存(buffer)
+  - speexdsp算法: 重采样(speex-resampler), 前处理(speex-preprocessor)
+  - soundtouch算法: 音调调节器(pitch), 节拍调节器(tempo), 速度调节器(rate)
+  - sox效果器: 音量(vol), 镶边(flanger), 颤音(tremolo), 回音(echos), 合唱(chorus), 卡拉OK(oops), 均衡器(equalizer), 高通(highpass), 低通(lowpass), 等等
 - 支持无限客制化块
 - 支持每块最多32个输入端点，32个输出端点
 - 支持基于帧的时间戳和基于采样点的时间戳
@@ -22,7 +25,7 @@
   - 实时设定日志等级
   - 转储日志到文件
   - 转储各个块的音频数据到文件
-- 支持多操作系统
+- 跨平台
   - Linux (x86_64), MacOS (x86_64), Android (aarch64)
 
 ## 开始
@@ -228,16 +231,15 @@ $ x86_64-linux-gnu/bin/larkexample7
 
 ```bash
 $ lkdb status                                  # 显示lark状态
-
 $ lkdb setparam RouteA blksoxeffect_0 0 400    # 只有高于400Hz的音乐信号输出到左喇叭
 $ lkdb setparam RouteA blksoxeffect_1 0 400    # 只有低于400Hz的音乐信号输出到右喇叭
 ```
 
 这个例子的源代码在此：[larkexample7.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample7.cpp)。
 
-#### 更多的例子
+### 更多的例子
 
-[作者的博客文章：<我的工程师爸爸-音频应用DIY系列>](https://blog.csdn.net/weixin_44278307?type=blog)通过小故事展示了利用lark来编程解决生活中遇到的音频问题。
+[作者的博客文章：<我的工程师爸爸-音频应用DIY系列>](https://blog.csdn.net/weixin_44278307?type=blog)通过一系列小故事展示了利用lark来编程解决生活中遇到的音频问题。
 
 ## 用`lkdb`实时调试
 
@@ -245,7 +247,7 @@ $ lkdb setparam RouteA blksoxeffect_1 0 400    # 只有低于400Hz的音乐信�
 
 ```
 Usage:
-  lkdb status
+  lkdb status [--dot]
     - Print the lark running status
     - Print dot code if enabled '--dot' option
   lkdb newroute ROUTENAME
