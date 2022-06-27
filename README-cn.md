@@ -1,8 +1,8 @@
-# ![logo](./examples/logo-cn.png)
+# ![logo](./examples/logo.png)
 
 [English](https://gitee.com/wksuper/lark-release/blob/master/README.md) | [简体中文](https://gitee.com/wksuper/lark-release/blob/master/README-cn.md)
 
-***百灵鸟*** 是一个免费、轻量、功能强大的软件音频DSP。它提供了一种灵活可扩展的方法来设计效能高、空间占用小、延时低的音频路由，让您可以像搭积木一样构建音频系统。
+***百灵鸟*** (lark) 是一个免费、轻量、功能强大的软件音频DSP。它提供了一种灵活可扩展的方法来设计效能高、空间占用小、延时低的音频路由，让您可以像搭积木一样构建音频系统。
 主要特性（至v0.10版本）：
 
 - 支持实时操作音频路由
