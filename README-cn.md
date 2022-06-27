@@ -1,10 +1,8 @@
-# lark
-
-![logo](./examples/logo.png)
+# ![logo](./examples/logo-cn.png)
 
 [English](https://gitee.com/wksuper/lark-release/blob/master/README.md) | [简体中文](https://gitee.com/wksuper/lark-release/blob/master/README-cn.md)
 
-***lark***是一个免费、轻量、功能强大的软件音频DSP。它提供了一种灵活可扩展的方法来设计效能高、空间占用小、延时低的音频路由，让您可以像搭积木一样构建音频系统。
+***百灵鸟*** 是一个免费、轻量、功能强大的软件音频DSP。它提供了一种灵活可扩展的方法来设计效能高、空间占用小、延时低的音频路由，让您可以像搭积木一样构建音频系统。
 主要特性（至v0.10版本）：
 
 - 支持实时操作音频路由
@@ -30,17 +28,17 @@
 - 跨平台
   - Linux (x86_64), MacOS (x86_64), Android (aarch64)
 
-## 开始
+## 开始吧
 
-***lark***是由一个基础的动态库`liblark.so`，各种可选的块（动态加载库）例如`libblkmixer.so`，和一个可选的可执行调试工具`lkdb`组成。基于 ***lark***，您可以很容易地创建您想实现的既可以简单又可以复杂的音频路由，实时启动/停止任意一个路由，或者实时设定/获取任意块的参数。
+***百灵鸟*** 是由一个基础的动态库`liblark.so`，各种可选的块（动态加载库）例如`libblkmixer.so`，和一个可选的可执行调试工具`lkdb`组成。基于 ***百灵鸟***，您可以很容易地创建您想实现的既可以简单又可以复杂的音频路由，实时启动/停止任意一个路由，或者实时设定/获取任意块的参数。
 
 ### 第1步
 
-由于 ***lark*** 依赖于klogging库，您首先需要安装klogging。访问 <https://gitee.com/wksuper/klogging> 以安装之。另一种方式是，此仓库已经包含了预编译好的`libklogging.so`，它会随着lark的安装而一起安装。
+由于 ***百灵鸟*** 依赖于klogging库，您首先需要安装klogging。访问 <https://gitee.com/wksuper/klogging> 以安装之。另一种方式是，此仓库已经包含了预编译好的`libklogging.so`，它会随着 ***百灵鸟*** 的安装而一起安装。
 
 ### 第2步
 
-安装 ***lark*** 到您的Linux机器。
+安装 ***百灵鸟*** 到您的Linux机器。
 
 ```bash
 $ cd lark-release
@@ -48,7 +46,7 @@ $ sudo ./install.sh
 $ sudo ldconfig
 ```
 
-当您不需要 ***lark*** 时，您可以使用`sudo ./uninstall.sh`来移除它。
+当您不需要 ***百灵鸟*** 时，您可以使用`sudo ./uninstall.sh`来移除它。
 
 ### 第3步
 
@@ -181,8 +179,7 @@ $ x86_64-linux-gnu/bin/larkexample5
 在另一个shell里，
 
 ```bash
-$ lkdb status                                   # 显示lark状态
-
+$ lkdb status                                   # 显示百灵鸟状态
 $ lkdb setparam RouteA blksoundtouch_0 1 0.6    # 音调变低
 $ lkdb setparam RouteA blksoundtouch_0 1 1.8    # 音调变高
 $ lkdb setparam RouteA blksoundtouch_0 1 1.0    # 音调变正常
@@ -232,7 +229,7 @@ $ x86_64-linux-gnu/bin/larkexample7
 在另一个shell里，
 
 ```bash
-$ lkdb status                                  # 显示lark状态
+$ lkdb status                                  # 显示百灵鸟状态
 $ lkdb setparam RouteA blksoxeffect_0 0 400    # 只有高于400Hz的音乐信号输出到左喇叭
 $ lkdb setparam RouteA blksoxeffect_1 0 400    # 只有低于400Hz的音乐信号输出到右喇叭
 ```
@@ -241,11 +238,11 @@ $ lkdb setparam RouteA blksoxeffect_1 0 400    # 只有低于400Hz的音乐信�
 
 ### 更多的例子
 
-[作者的博客文章：<我的工程师爸爸-音频应用DIY系列>](https://blog.csdn.net/weixin_44278307?type=blog)通过一系列小故事展示了利用lark来编程解决生活中遇到的音频问题。
+[作者的博客文章：<我的工程师爸爸-音频应用DIY系列>](https://blog.csdn.net/weixin_44278307?type=blog)通过一系列小故事展示了利用 ***百灵鸟*** 来编程解决生活中遇到的音频问题。
 
 ## 用`lkdb`实时调试
 
-当 ***lark*** 在一个进程里运行时，调试工具`lkdb`可以跟它通信，从 ***lark*** 获取信息，向 ***lark*** 发送命令。
+当 ***百灵鸟*** 在一个进程里运行时，调试工具`lkdb`可以跟它通信，从 ***百灵鸟*** 获取信息，向 ***百灵鸟*** 发送命令。
 
 ```
 Usage:
@@ -282,7 +279,7 @@ Usage:
 举个例子，当例2运行时，在另外一个shell里，您可以通过`lkdb`调节例2的音量。
 
 ```bash
-$ lkdb status                               # 显示lark状态
+$ lkdb status                               # 显示百灵鸟状态
 RouteA is RUNNING, 625 frames processed OK, 0 error frame
 	blkfilereader_0
 		(O00) --> lnk_0    48000Hz   S16_LE  2ch    960samples/frame
@@ -373,7 +370,7 @@ $ sudo apt install graphviz
 在一个shell里，
 
 ```bash
-$ x86_64-linux-gnu/bin/larkexample0    # 运行lark
+$ x86_64-linux-gnu/bin/larkexample0    # 运行百灵鸟
 ```
 
 在另一个shell里，
@@ -399,19 +396,19 @@ Deleted RouteA
 
 ### 第3步
 
-要应用在真实产品中，您需要在您的进程里调用 ***lark*** 的API来创建您自己的音频路由。[样例](https://gitee.com/wksuper/lark-release/tree/master/examples)已经列出。参考[用户手册](https://gitee.com/wksuper/lark-release/blob/master/MANUAL.md)以获取更多信息。
+要应用在真实产品中，您需要在您的进程里调用 ***百灵鸟*** 的API来创建您自己的音频路由。[样例](https://gitee.com/wksuper/lark-release/tree/master/examples)已经列出。参考[用户手册](https://gitee.com/wksuper/lark-release/blob/master/MANUAL.md)以获取更多信息。
 
 ## 常见问题与回答
 
 **Q1**: “块”是什么？“端点”是什么？“链接”是什么？“路由”是什么？
 
-**A**: 一个“块”就是一个软件DSP处理单元。它从一个动态加载库里被创建，并被 ***lark*** 路由所管理。它接受最多32路输入（即输入端点）数据，处理它们，把处理后的数据填入输出端点（最多32路输出）。
+**A**: 一个“块”就是一个软件DSP处理单元。它从一个动态加载库里被创建，并被 ***百灵鸟*** 路由所管理。它接受最多32路输入（即输入端点）数据，处理它们，把处理后的数据填入输出端点（最多32路输出）。
 通常情况，一个端点代表一个声道音频，然而一个端点也可以运载多声道。例如“interleave”块的一个输出端点就可以运载多声道。
 一个“链接”连接一个块的一个输出端点（作为源）至另一个块的一个输入端点（作为汇）。 一个“路由”是一个由多个块连接成的链条（或者图）。
 
-**Q2**: 在一个机器上，我可以同时运行几个 ***lark*** 实例？在一个 ***lark*** 中，我可以创建几个路由？在一个路由中，我可以创建多少个块？多少个first块？多少个last块？
+**Q2**: 在一个机器上，我可以同时运行几个 ***百灵鸟*** 实例？在一个 ***百灵鸟*** 中，我可以创建几个路由？在一个路由中，我可以创建多少个块？多少个first块？多少个last块？
 
-**A**: 在一个机器上，只有一个进程被容许创建一个 ***lark*** 实例。也就是说，一个机器运行一个 ***lark*** 实例。`lkdb`会跟这个唯一的 ***lark*** 实例通信。在一个 ***lark*** 中，最多可以创建26个路由，它们的名字需要被手动指定为"RouteA", "RouteB", ..., "RouteZ"。对于每个路由，名字是需要的，并且应该固定为"Route#"（大小写敏感），这里“#”代表[A-Z]。
+**A**: 在一个机器上，只有一个进程被容许创建一个 ***百灵鸟*** 实例。也就是说，一个机器运行一个 ***百灵鸟*** 实例。`lkdb`会跟这个唯一的 ***百灵鸟*** 实例通信。在一个 ***百灵鸟*** 中，最多可以创建26个路由，它们的名字需要被手动指定为"RouteA", "RouteB", ..., "RouteZ"。对于每个路由，名字是需要的，并且应该固定为"Route#"（大小写敏感），这里“#”代表[A-Z]。
 在一个路由里，创建块没有数量限制。所有从一个路由里创建出来的块/链接都属于这个路由，也就是意味着它们的资源是被这个路由统一管理。
 同样，创建first块和last块也没有数量限制。
 

@@ -1,6 +1,4 @@
-# lark
-
-![logo](./examples/logo.png)
+# ![logo](./examples/logo.png)
 
 [English](https://gitee.com/wksuper/lark-release/blob/master/README.md) | [简体中文](https://gitee.com/wksuper/lark-release/blob/master/README-cn.md)
 
@@ -182,7 +180,6 @@ In the other shell,
 
 ```bash
 $ lkdb status                                   # Shows lark status
-
 $ lkdb setparam RouteA blksoundtouch_0 1 0.6    # Sound pitch goes lower
 $ lkdb setparam RouteA blksoundtouch_0 1 1.8    # Sound pitch goes higher
 $ lkdb setparam RouteA blksoundtouch_0 1 1.0    # Sound pitch goes normal
