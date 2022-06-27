@@ -1,5 +1,7 @@
 # lark
 
+![logo](./examples/logo.png)
+
 [English](https://gitee.com/wksuper/lark-release/blob/master/README.md) | [简体中文](https://gitee.com/wksuper/lark-release/blob/master/README-cn.md)
 
 ***lark*** is a free, lite and powerful software audio DSP. It provides a flexible and scalable way to design audio route(s) with high efficiency, small footprint and low latency that enables you to build your audio system like building blocks.
