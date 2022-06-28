@@ -114,9 +114,11 @@ int main()
         return -1;
     }
 
-    soFileName = "libblkpaplayback" SUFIX;
-    lark::Block *blkPAPlayback = route->NewBlock(soFileName, false, true);
-    if (!blkPAPlayback) {
+    soFileName = "libblkfilewriter" SUFIX;
+    args.clear();
+    args.push_back("--");  // to stdout
+    lark::Block *blkFileWriter = route->NewBlock(soFileName, false, true, args);
+    if (!blkFileWriter) {
         KLOGE("Failed to new a block from %s", soFileName);
         return -1;
     }
@@ -154,7 +156,7 @@ int main()
         KLOGE("Failed to new a link");
         return -1;
     }
-    if (!route->NewLink(rate, lark::SampleFormat_S32, chNum, frameSizeInSamples, blkInterleave, 0, blkPAPlayback, 0)) {
+    if (!route->NewLink(rate, lark::SampleFormat_S32, chNum, frameSizeInSamples, blkInterleave, 0, blkFileWriter, 0)) {
         KLOGE("Failed to new a link");
         return -1;
     }

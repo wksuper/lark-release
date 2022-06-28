@@ -3,7 +3,7 @@
 [English](https://gitee.com/wksuper/lark-release/blob/master/README.md) | [简体中文](https://gitee.com/wksuper/lark-release/blob/master/README-cn.md)
 
 ***百灵鸟*** (lark) 是一个免费、轻量、功能强大的软件音频DSP。它提供了一种灵活可扩展的方法来设计效能高、空间占用小、延时低的音频路由，让您可以像搭积木一样构建音频系统。
-主要特性（至v0.10版本）：
+主要特性（至v0.11版本）：
 
 - 支持实时操作音频路由
   - 实时加载/卸载块
@@ -198,41 +198,77 @@ $ lkdb setparam RouteA blksoundtouch_0 3 1.0    # 播放速率变正常
 ```
 RouteA
 
- libblkfilereader.so  libblkformatdapter.so   libblkdeinterleave.so  libblkmixer.so  libblksoxeffect.so  libblkinterleave.so  libblkpaplayback.so
+ libblkfilereader.so  libblkformatdapter.so   libblkdeinterleave.so  libblkmixer.so  libblksoxeffect.so  libblkinterleave.so  libblkfilewriter.so
 
   ****************     *******************     ******************     ***********     ***************     ****************     ****************
   *              *     *                 *     *                *     *         *     * soxeffect_0 *     *              *     *              *
   *              *     *                 *     *                *0-->0*         *0-->0* (highpass)  *0-->0*              *     *              *
   *              *     *                 *     *                *     *         *     ***************     *              *     *              *
-  * filereader_0 *0-->0* formatadapter_0 *0-->0* deinterleave_0 *     * mixer_0 *                         * interleave_0 *0-->0* paplayback_0 *
-  *              *     *                 *     *                *     *         *     ***************     *              *     *              *
-  *              *     *                 *     *                *1-->1*         *0-->0* soxeffect_1 *0-->1*              *     *              *
+  * filereader_0 *0-->0* formatadapter_0 *0-->0* deinterleave_0 *     * mixer_0 *                         * interleave_0 *0-->0* filewriter_0 *
+  *              *     *                 *     *                *     *         *     ***************     *              *     *   (stdout)   *
+  *              *     *                 *     *                *1-->1*         *1-->0* soxeffect_1 *0-->1*              *     *              *
   *              *     *                 *     *                *     *         *     *  (lowpass)  *     *              *     *              *
   ****************     *******************     ******************     ***********     ***************     ****************     ****************
 ```
 
-运行例7之前需要先安装 ***SoX*** 库和 ***PortAudio*** 库。
+运行例7之前需要先安装 ***SoX*** 库和 ***ffmpeg*** 。
 
 ```bash
 $ sudo apt install libsox-dev
-$ sudo apt install libportaudio2
+$ sudo apt install ffmpeg
 ```
+
+由于这个例子输出音频数据到stdout，所以在运行例子之前，我们需要通过修改配置文件里选项的默认值来关闭日志到stdout的输出。
+
+```bash
+$ sudo vim /etc/lark.conf
+```
+
+```
+[config]
+logtostdout=false
+logtostderr=true
+loglevel=4
+dumppath=/Users/kuwang/gitee/dump/
+```
+
+> 参考[MANUAL.md - 6 Configuration File](https://gitee.com/wksuper/lark-release/blob/master/MANUAL.md#6-configuration-file)以获取更过关于配置文件的信息。
 
 运行例7：
 
 ```bash
-$ x86_64-linux-gnu/bin/larkexample7
+$ x86_64-apple-darwin/bin/larkexample7 | ffplay -i pipe:0 -f s32le -ar 48000 -ac 2
 ```
 
-如果没错误的话，播放应该开始了。
+如果没错误的话，播放应该开始了。同时在ffplay的播放画面上，音频频谱正在被实时绘制如下：
+
+![larkexample7-1](./examples/larkexample7-1.png)
 
 在另一个shell里，
 
 ```bash
 $ lkdb status                                  # 显示百灵鸟状态
-$ lkdb setparam RouteA blksoxeffect_0 0 400    # 只有高于400Hz的音乐信号输出到左喇叭
-$ lkdb setparam RouteA blksoxeffect_1 0 400    # 只有低于400Hz的音乐信号输出到右喇叭
 ```
+
+```bash
+$ lkdb setparam RouteA blksoxeffect_highpass_0 0 800    # 只有高于800Hz的音乐信号输出到左喇叭
+```
+
+音频频谱实时绘制如下：
+
+![larkexample7-2](./examples/larkexample7-2.png)
+
+> 提示：在ffplay的音频频谱中，红色代表左声道，绿色代表右声道。
+
+```bash
+$ lkdb setparam RouteA blksoxeffect_lowpass_0 0 800    # 只有低于800Hz的音乐信号输出到右喇叭
+```
+
+音频频谱实时绘制如下：
+
+![larkexample7-3](./examples/larkexample7-3.png)
+
+ffplay频谱验证了集成在 ***百灵鸟*** 路由里的sox效果器可以实时生效。
 
 这个例子的源代码在此：[larkexample7.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample7.cpp)。
 
@@ -423,6 +459,15 @@ Deleted RouteA
 需要用到“多路由”的场景是，当多个输入放在一个路由里运行会有机会相互阻塞时，那么它们就应该被分离到多个路由。例如，一个输入alsacapture，一个输入是echo-reference。
 
 ## 版本历史
+
+### 0.11
+
+- BlkSoxEffect: 支持了"stat"效果器
+- 添加了 ***百灵鸟*** 的logo
+- lark.conf: 支持了新的选项'logtostdout'和'logtostderr'
+- BlkFileWriter: 支持了写数据到stdout
+- BlkFileReader: 支持了从stdin读数据
+- larkexample7: 输出音频到stdout而不是portaudio
 
 ### 0.10
 

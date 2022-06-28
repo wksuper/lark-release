@@ -3,7 +3,7 @@
 [English](https://gitee.com/wksuper/lark-release/blob/master/README.md) | [简体中文](https://gitee.com/wksuper/lark-release/blob/master/README-cn.md)
 
 ***lark*** is a free, lite and powerful software audio DSP. It provides a flexible and scalable way to design audio route(s) with high efficiency, small footprint and low latency that enables you to build your audio system like building blocks.
-Main features (as of v0.10):
+Main features (as of v0.11):
 
 - Support realtime manipulating audio routes
   - Load/Unload blocks in real time
@@ -198,41 +198,77 @@ The source code of this example is shown in [larkexample5.cpp](https://gitee.com
 ```
 RouteA
 
- libblkfilereader.so  libblkformatdapter.so   libblkdeinterleave.so  libblkmixer.so  libblksoxeffect.so  libblkinterleave.so  libblkpaplayback.so
+ libblkfilereader.so  libblkformatdapter.so   libblkdeinterleave.so  libblkmixer.so  libblksoxeffect.so  libblkinterleave.so  libblkfilewriter.so
 
   ****************     *******************     ******************     ***********     ***************     ****************     ****************
   *              *     *                 *     *                *     *         *     * soxeffect_0 *     *              *     *              *
   *              *     *                 *     *                *0-->0*         *0-->0* (highpass)  *0-->0*              *     *              *
   *              *     *                 *     *                *     *         *     ***************     *              *     *              *
-  * filereader_0 *0-->0* formatadapter_0 *0-->0* deinterleave_0 *     * mixer_0 *                         * interleave_0 *0-->0* paplayback_0 *
-  *              *     *                 *     *                *     *         *     ***************     *              *     *              *
-  *              *     *                 *     *                *1-->1*         *0-->0* soxeffect_1 *0-->1*              *     *              *
+  * filereader_0 *0-->0* formatadapter_0 *0-->0* deinterleave_0 *     * mixer_0 *                         * interleave_0 *0-->0* filewriter_0 *
+  *              *     *                 *     *                *     *         *     ***************     *              *     *   (stdout)   *
+  *              *     *                 *     *                *1-->1*         *1-->0* soxeffect_1 *0-->1*              *     *              *
   *              *     *                 *     *                *     *         *     *  (lowpass)  *     *              *     *              *
   ****************     *******************     ******************     ***********     ***************     ****************     ****************
 ```
 
-To run example7, the ***SoX*** library and the ***PortAudio*** library are needed first.
+To run example7, the ***SoX*** library and ***ffmpeg*** are needed first.
 
 ```bash
 $ sudo apt install libsox-dev
-$ sudo apt install libportaudio2
+$ sudo apt install ffmpeg
 ```
+
+Since this example outputs audio data to stdout, before running example7, we need to disable logging to stdout by changing the option default value in configuration file.
+
+```bash
+$ sudo vim /etc/lark.conf
+```
+
+```
+[config]
+logtostdout=false
+logtostderr=true
+loglevel=4
+dumppath=/Users/kuwang/gitee/dump/
+```
+
+> Refer to [MANUAL.md - 6 Configuration File](https://gitee.com/wksuper/lark-release/blob/master/MANUAL.md#6-configuration-file) for detail.
 
 Run example7:
 
 ```bash
-$ x86_64-linux-gnu/bin/larkexample7
+$ x86_64-apple-darwin/bin/larkexample7 | ffplay -i pipe:0 -f s32le -ar 48000 -ac 2
 ```
 
-If no error, playback will be started.
+If no error, playback will be started, and on the ffplay screen, audio spectrum is being drawed like this.
+
+![larkexample7-1](./examples/larkexample7-1.png)
 
 In the other shell,
 
 ```bash
 $ lkdb status                                  # Shows lark status
-$ lkdb setparam RouteA blksoxeffect_0 0 400    # Only higher than 400Hz music signals go to left speaker
-$ lkdb setparam RouteA blksoxeffect_1 0 400    # Only lower than 400Hz music signals go to right speaker
 ```
+
+```bash
+$ lkdb setparam RouteA blksoxeffect_highpass_0 0 800    # Only higher than 800Hz music signals go to left speaker
+```
+
+The audio spectrum is being drawed like this.
+
+![larkexample7-2](./examples/larkexample7-2.png)
+
+> Tip: In ffplay spectrum, red means left channel and green means right channel.
+
+```bash
+$ lkdb setparam RouteA blksoxeffect_lowpass_0 0 800    # Only lower than 800Hz music signals go to right speaker
+```
+
+The audio spectrum is being drawed like this.
+
+![larkexample7-3](./examples/larkexample7-3.png)
+
+The ffplay spectrum verified the sox-effects on lark route can take effect in realtime.
 
 The source code of this example is shown in [larkexample7.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample7.cpp).
 
@@ -415,6 +451,15 @@ For applying on real product, you need to call ***lark*** APIs to make your own 
 **A**: One route has one thread to process data. Normally "multi-first-blocks in one route" can work well. In this case, the multiple inputs are able to provide frames at the same pace, and they shouldn't be blocked by each other. For example, one input is alsacapture, one input is filereader. The scenario that needs multi-routes is, if the multiple inputs running in one route have chance to block each other, then they need to be separated into multi-routes. For example, one input is alsacapture, one input is echo-reference.
 
 ## Change Log
+
+### 0.11
+
+- BlkSoxEffect: Supported "stat" effect
+- Added ***lark*** logo
+- lark.conf: Supported new options 'logtostdout' 'logtostderr'
+- BlkFileWriter: Supported stdout
+- BlkFileReader: Supported stdin
+- larkexample7: Output audio to stdout instead of portaudio
 
 ### 0.10
 

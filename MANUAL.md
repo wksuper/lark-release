@@ -251,6 +251,7 @@ It should be a 'first' block in a route.
   - "libblkfilereader.so"
 - Creation Arguments
   - FILEPATH
+  - Specially, when FILEPATH="--", the filereader will read data from stdin.
 - SetParameter Arguments
   - None
 - GetParameter Arguments
@@ -267,6 +268,7 @@ It should be a 'last' block in a route.
   - "libblkfilewriter.so"
 - Creation Arguments
   - FILEPATH
+  - Specially, when FILEPATH="--", the filewriter will write data to stdout.
 - SetParameter Arguments
   - None
 - GetParameter Arguments
@@ -610,11 +612,17 @@ A typical `/etc/lark.conf` looks like:
 
 ```conf
 [config]
+logtostdout=true
+logtostderr=false
 loglevel=6
 dumppath=/your/lark/dump/path
 ```
 
-where `loglevel`'s value is interpreted as
+`logtostdout` is a boolean value to enable/disable logging to stdout.
+
+`logtostderr` is a boolean value to enable/disable logging to stderr.
+
+`loglevel`'s value is interpreted as
 
 - 0: off
 - 1: fatal
