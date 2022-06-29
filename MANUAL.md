@@ -634,6 +634,6 @@ dumppath=/your/lark/dump/path
 
 `dumppath`'s value is interpreted as the directory in which the data dump and log dump will be saved.
 
-If none of them is assigned, then lark will use loglevel=4(info) as default and no log/data dump as default.
+If none of them is assigned, then lark will use logtostdout=true logtostderr=false loglevel=4(info) and no log/data dump as default.
 
 Note: `lkdb loglevel` and `lkdb setdump` only change the log level and dump path in real time, and do not take effect on this configuration file.

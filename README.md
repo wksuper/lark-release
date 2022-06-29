@@ -3,6 +3,7 @@
 [English](https://gitee.com/wksuper/lark-release/blob/master/README.md) | [简体中文](https://gitee.com/wksuper/lark-release/blob/master/README-cn.md)
 
 ***lark*** is a free, lite and powerful software audio DSP. It provides a flexible and scalable way to design audio route(s) with high efficiency, small footprint and low latency that enables you to build your audio system like building blocks.
+
 Main features (as of v0.11):
 
 - Support realtime manipulating audio routes
@@ -148,7 +149,7 @@ The captured audio is saved in `./cap-16000_16_1.pcm`.
 
 The source code of this example is shown in [larkexample3.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample3.cpp).
 
-#### Example 5: Run a single playback route with SoundTouch embedded for tuning sound pitch, tempo and rate
+#### Example 5: Run a single playback route with ***SoundTouch*** embedded for tuning sound pitch, tempo and rate
 
 ```
 RouteA
@@ -198,24 +199,24 @@ The source code of this example is shown in [larkexample5.cpp](https://gitee.com
 ```
 RouteA
 
- libblkfilereader.so  libblkformatdapter.so   libblkdeinterleave.so  libblkmixer.so  libblksoxeffect.so  libblkinterleave.so  libblkfilewriter.so
+ libblkfilereader.dylib  libblkformatdapter.dylib   libblkdeinterleave.dylib  libblkmixer.dylib      libblksoxeffect.dylib       libblkinterleave.dylib  libblkfilewriter.dylib
 
-  ****************     *******************     ******************     ***********     ***************     ****************     ****************
-  *              *     *                 *     *                *     *         *     * soxeffect_0 *     *              *     *              *
-  *              *     *                 *     *                *0-->0*         *0-->0* (highpass)  *0-->0*              *     *              *
-  *              *     *                 *     *                *     *         *     ***************     *              *     *              *
-  * filereader_0 *0-->0* formatadapter_0 *0-->0* deinterleave_0 *     * mixer_0 *                         * interleave_0 *0-->0* filewriter_0 *
-  *              *     *                 *     *                *     *         *     ***************     *              *     *   (stdout)   *
-  *              *     *                 *     *                *1-->1*         *1-->0* soxeffect_1 *0-->1*              *     *              *
-  *              *     *                 *     *                *     *         *     *  (lowpass)  *     *              *     *              *
-  ****************     *******************     ******************     ***********     ***************     ****************     ****************
+  *******************     **********************     *********************     **************     ***************************     *******************     *******************
+  *                 *     *                    *     *                   *     *            *     * blksoxeffect_highpass_0 *     *                 *     *                 *
+  *                 *     *                    *     *                   *0-->0*            *0-->0*                         *0-->0*                 *     *                 *
+  *                 *     *                    *     *                   *     *            *     ***************************     *                 *     *                 *
+  * blkfilereader_0 *0-->0* blkformatadapter_0 *0-->0* blkdeinterleave_0 *     * blkmixer_0 *                                     * blkinterleave_0 *0-->0* blkfilewriter_0 *
+  *                 *     *                    *     *                   *     *            *     ***************************     *                 *     *     (stdout)    *
+  *                 *     *                    *     *                   *1-->1*            *1-->0*                         *0-->1*                 *     *                 *
+  *                 *     *                    *     *                   *     *            *     * blksoxeffect_lowpass_0  *     *                 *     *                 *
+  *******************     **********************     *********************     **************     ***************************     *******************     *******************
 ```
 
 To run example7, the ***SoX*** library and ***ffmpeg*** are needed first.
 
 ```bash
-$ sudo apt install libsox-dev
-$ sudo apt install ffmpeg
+$ brew install sox
+$ brew install ffmpeg
 ```
 
 Since this example outputs audio data to stdout, before running example7, we need to disable logging to stdout by changing the option default value in configuration file.
@@ -237,7 +238,7 @@ dumppath=/Users/kuwang/gitee/dump/
 Run example7:
 
 ```bash
-$ x86_64-apple-darwin/bin/larkexample7 | ffplay -i pipe:0 -f s32le -ar 48000 -ac 2
+$ x86_64-apple-darwin/bin/larkexample7 | ffplay -i pipe:0 -f s32le -ar 48000 -ac 2 -autoexit
 ```
 
 If no error, playback will be started, and on the ffplay screen, audio spectrum is being drawed like this.
@@ -258,7 +259,7 @@ The audio spectrum is being drawed like this.
 
 ![larkexample7-2](./examples/larkexample7-2.png)
 
-> Tip: In ffplay spectrum, red means left channel and green means right channel.
+> Tips: In ffplay spectrum, red means left channel and green means right channel. If grey is displayed on a certain frequency at a certain time, it means the power of left channel and of right channel on that frequency at that time is same.
 
 ```bash
 $ lkdb setparam RouteA blksoxeffect_lowpass_0 0 800    # Only lower than 800Hz music signals go to right speaker
@@ -268,7 +269,7 @@ The audio spectrum is being drawed like this.
 
 ![larkexample7-3](./examples/larkexample7-3.png)
 
-The ffplay spectrum verified the sox-effects on lark route can take effect in realtime.
+The real-time change of ffplay spectrum color verified the sox-effects on lark route are taking effect in real time.
 
 The source code of this example is shown in [larkexample7.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample7.cpp).
 

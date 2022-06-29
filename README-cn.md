@@ -2,7 +2,8 @@
 
 [English](https://gitee.com/wksuper/lark-release/blob/master/README.md) | [简体中文](https://gitee.com/wksuper/lark-release/blob/master/README-cn.md)
 
-***百灵鸟*** (lark) 是一个免费、轻量、功能强大的软件音频DSP。它提供了一种灵活可扩展的方法来设计效能高、空间占用小、延时低的音频路由，让您可以像搭积木一样构建音频系统。
+***百灵鸟*** (***lark***) 是一个免费、轻量、功能强大的软件音频DSP。它提供了一种灵活可扩展的方法来设计效能高、空间占用小、延时低的音频路由，让您可以像搭积木一样构建音频系统。
+
 主要特性（至v0.11版本）：
 
 - 支持实时操作音频路由
@@ -148,7 +149,7 @@ $ x86_64-linux-gnu/bin/larkexample3 plughw:0,0 plughw:0,0
 
 这个例子的源代码在此：[larkexample3.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample3.cpp)。
 
-#### 例5：运行一个单播放路由，嵌入了SoundTouch以做音调、节拍、播放速率的调节
+#### 例5：运行一个单播放路由，嵌入了 ***SoundTouch*** 以做音调、节拍、播放速率的调节
 
 ```
 RouteA
@@ -198,24 +199,24 @@ $ lkdb setparam RouteA blksoundtouch_0 3 1.0    # 播放速率变正常
 ```
 RouteA
 
- libblkfilereader.so  libblkformatdapter.so   libblkdeinterleave.so  libblkmixer.so  libblksoxeffect.so  libblkinterleave.so  libblkfilewriter.so
+ libblkfilereader.dylib  libblkformatdapter.dylib   libblkdeinterleave.dylib  libblkmixer.dylib      libblksoxeffect.dylib       libblkinterleave.dylib  libblkfilewriter.dylib
 
-  ****************     *******************     ******************     ***********     ***************     ****************     ****************
-  *              *     *                 *     *                *     *         *     * soxeffect_0 *     *              *     *              *
-  *              *     *                 *     *                *0-->0*         *0-->0* (highpass)  *0-->0*              *     *              *
-  *              *     *                 *     *                *     *         *     ***************     *              *     *              *
-  * filereader_0 *0-->0* formatadapter_0 *0-->0* deinterleave_0 *     * mixer_0 *                         * interleave_0 *0-->0* filewriter_0 *
-  *              *     *                 *     *                *     *         *     ***************     *              *     *   (stdout)   *
-  *              *     *                 *     *                *1-->1*         *1-->0* soxeffect_1 *0-->1*              *     *              *
-  *              *     *                 *     *                *     *         *     *  (lowpass)  *     *              *     *              *
-  ****************     *******************     ******************     ***********     ***************     ****************     ****************
+  *******************     **********************     *********************     **************     ***************************     *******************     *******************
+  *                 *     *                    *     *                   *     *            *     * blksoxeffect_highpass_0 *     *                 *     *                 *
+  *                 *     *                    *     *                   *0-->0*            *0-->0*                         *0-->0*                 *     *                 *
+  *                 *     *                    *     *                   *     *            *     ***************************     *                 *     *                 *
+  * blkfilereader_0 *0-->0* blkformatadapter_0 *0-->0* blkdeinterleave_0 *     * blkmixer_0 *                                     * blkinterleave_0 *0-->0* blkfilewriter_0 *
+  *                 *     *                    *     *                   *     *            *     ***************************     *                 *     *     (stdout)    *
+  *                 *     *                    *     *                   *1-->1*            *1-->0*                         *0-->1*                 *     *                 *
+  *                 *     *                    *     *                   *     *            *     * blksoxeffect_lowpass_0  *     *                 *     *                 *
+  *******************     **********************     *********************     **************     ***************************     *******************     *******************
 ```
 
 运行例7之前需要先安装 ***SoX*** 库和 ***ffmpeg*** 。
 
 ```bash
-$ sudo apt install libsox-dev
-$ sudo apt install ffmpeg
+$ brew install sox
+$ brew install ffmpeg
 ```
 
 由于这个例子输出音频数据到stdout，所以在运行例子之前，我们需要通过修改配置文件里选项的默认值来关闭日志到stdout的输出。
@@ -232,12 +233,12 @@ loglevel=4
 dumppath=/Users/kuwang/gitee/dump/
 ```
 
-> 参考[MANUAL.md - 6 Configuration File](https://gitee.com/wksuper/lark-release/blob/master/MANUAL.md#6-configuration-file)以获取更过关于配置文件的信息。
+> 参考[MANUAL.md - 6 Configuration File](https://gitee.com/wksuper/lark-release/blob/master/MANUAL.md#6-configuration-file)以获取更多关于配置文件的信息。
 
 运行例7：
 
 ```bash
-$ x86_64-apple-darwin/bin/larkexample7 | ffplay -i pipe:0 -f s32le -ar 48000 -ac 2
+$ x86_64-apple-darwin/bin/larkexample7 | ffplay -i pipe:0 -f s32le -ar 48000 -ac 2 -autoexit
 ```
 
 如果没错误的话，播放应该开始了。同时在ffplay的播放画面上，音频频谱正在被实时绘制如下：
@@ -258,7 +259,7 @@ $ lkdb setparam RouteA blksoxeffect_highpass_0 0 800    # 只有高于800Hz的�
 
 ![larkexample7-2](./examples/larkexample7-2.png)
 
-> 提示：在ffplay的音频频谱中，红色代表左声道，绿色代表右声道。
+> 贴士：在ffplay的音频频谱中，红色代表左声道，绿色代表右声道。如果在某个时刻点某个频率显示为灰色，则表示左右声道在那个时刻的那个频率上能量均等。
 
 ```bash
 $ lkdb setparam RouteA blksoxeffect_lowpass_0 0 800    # 只有低于800Hz的音乐信号输出到右喇叭
@@ -268,7 +269,7 @@ $ lkdb setparam RouteA blksoxeffect_lowpass_0 0 800    # 只有低于800Hz的音
 
 ![larkexample7-3](./examples/larkexample7-3.png)
 
-ffplay频谱验证了集成在 ***百灵鸟*** 路由里的sox效果器可以实时生效。
+ffplay频谱颜色的实时变化验证了集成在 ***百灵鸟*** 路由里的sox效果器在实时生效。
 
 这个例子的源代码在此：[larkexample7.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample7.cpp)。
 
