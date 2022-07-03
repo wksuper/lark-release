@@ -85,9 +85,6 @@ int MyDsp::SetupRoutes()
     // 2. Create RouteB's blocks
     const char *soFileName = "libblkstreamin.so";
     lark::Parameters args;
-    args.push_back(std::to_string(playbackRate));
-    args.push_back(std::to_string(format));
-    args.push_back(std::to_string(chNum));
     lark::DataProducer *producer = fifo;
     producer->SetBlocking(false);
     args.push_back(std::to_string((unsigned long)producer));
@@ -278,9 +275,6 @@ int MyDsp::SetupRoutes()
 
     soFileName = "libblkstreamout.so";
     args.clear();
-    args.push_back(std::to_string(playbackRate));
-    args.push_back(std::to_string(format));
-    args.push_back(std::to_string(chNum));
     lark::DataConsumer *consumer = fifo;
     consumer->SetBlocking(false);
     args.push_back(std::to_string((unsigned long)consumer));

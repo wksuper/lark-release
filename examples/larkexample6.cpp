@@ -70,9 +70,6 @@ int main()
     // Create RouteA's blocks
     const char *soFileName = "libblkstreamin" SUFIX;
     lark::Parameters args;
-    args.push_back(std::to_string(rate));
-    args.push_back(std::to_string(format));
-    args.push_back(std::to_string(chNum));
     lark::DataProducer *producer = fifo;
     producer->SetBlocking(true);
     args.push_back(std::to_string((unsigned long)producer));
@@ -162,9 +159,6 @@ int main()
 
     soFileName = "libblkstreamout" SUFIX;
     args.clear();
-    args.push_back(std::to_string(rate));
-    args.push_back(std::to_string(format));
-    args.push_back(std::to_string(chNum));
     lark::DataConsumer *consumer = fifo;
     consumer->SetBlocking(true);
     args.push_back(std::to_string((unsigned long)consumer));

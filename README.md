@@ -4,7 +4,7 @@
 
 ***lark*** is a free, lite and powerful software audio DSP. It provides a flexible and scalable way to design audio route(s) with high efficiency, small footprint and low latency that enables you to build your audio system like building blocks.
 
-Main features (as of v0.11):
+Main features (as of v0.12):
 
 - Support realtime manipulating audio routes
   - Load/Unload blocks in real time
@@ -218,22 +218,6 @@ To run example7, the ***SoX*** library and ***ffmpeg*** are needed first.
 $ brew install sox
 $ brew install ffmpeg
 ```
-
-Since this example outputs audio data to stdout, before running example7, we need to disable logging to stdout by changing the option default value in configuration file.
-
-```bash
-$ sudo vim /etc/lark.conf
-```
-
-```
-[config]
-logtostdout=false
-logtostderr=true
-loglevel=4
-dumppath=/Users/kuwang/gitee/dump/
-```
-
-> Refer to [MANUAL.md - 6 Configuration File](https://gitee.com/wksuper/lark-release/blob/master/MANUAL.md#6-configuration-file) for detail.
 
 Run example7:
 
@@ -452,6 +436,13 @@ For applying on real product, you need to call ***lark*** APIs to make your own 
 **A**: One route has one thread to process data. Normally "multi-first-blocks in one route" can work well. In this case, the multiple inputs are able to provide frames at the same pace, and they shouldn't be blocked by each other. For example, one input is alsacapture, one input is filereader. The scenario that needs multi-routes is, if the multiple inputs running in one route have chance to block each other, then they need to be separated into multi-routes. For example, one input is alsacapture, one input is echo-reference.
 
 ## Change Log
+
+### 0.12
+
+- BlkFormatAdapter: More precise for floating conversion
+- BlkMixer: No clip for float mixing
+- BlkStreamIn BlkStreamOut: Removed rate, format, chNum
+- Setting logtostdout=false logtostderr=true as default
 
 ### 0.11
 

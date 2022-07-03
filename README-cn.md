@@ -4,7 +4,7 @@
 
 ***百灵鸟*** (***lark***) 是一个免费、轻量、功能强大的软件音频DSP。它提供了一种灵活可扩展的方法来设计效能高、空间占用小、延时低的音频路由，让您可以像搭积木一样构建音频系统。
 
-主要特性（至v0.11版本）：
+主要特性（至v0.12版本）：
 
 - 支持实时操作音频路由
   - 实时加载/卸载块
@@ -218,22 +218,6 @@ RouteA
 $ brew install sox
 $ brew install ffmpeg
 ```
-
-由于这个例子输出音频数据到stdout，所以在运行例子之前，我们需要通过修改配置文件里选项的默认值来关闭日志到stdout的输出。
-
-```bash
-$ sudo vim /etc/lark.conf
-```
-
-```
-[config]
-logtostdout=false
-logtostderr=true
-loglevel=4
-dumppath=/Users/kuwang/gitee/dump/
-```
-
-> 参考[MANUAL.md - 6 Configuration File](https://gitee.com/wksuper/lark-release/blob/master/MANUAL.md#6-configuration-file)以获取更多关于配置文件的信息。
 
 运行例7：
 
@@ -460,6 +444,13 @@ Deleted RouteA
 需要用到“多路由”的场景是，当多个输入放在一个路由里运行会有机会相互阻塞时，那么它们就应该被分离到多个路由。例如，一个输入alsacapture，一个输入是echo-reference。
 
 ## 版本历史
+
+### 0.12
+
+- BlkFormatAdapter: 更精确的浮点转换
+- BlkMixer: 浮点混音不做clip处理
+- BlkStreamIn BlkStreamOut: 移除了rate, format, chNum参数
+- 默认设定logtostdout=false logtostderr=true
 
 ### 0.11
 
