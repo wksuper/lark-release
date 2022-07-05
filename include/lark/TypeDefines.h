@@ -59,9 +59,11 @@ enum ErrorType : int {
 
 enum SampleFormat {
     BYTE = 0,
-    S16_LE = 1, S16_BE = 2,
-    S32_LE = 3, S32_BE = 4,
-    FLOAT_LE = 5, FLOAT_BE = 6
+    S16_LE, S16_BE,
+    S32_LE, S32_BE,
+    S24_3LE, S24_3BE,
+    FLOAT_LE, FLOAT_BE,
+    FORMAT_NUM
 };
 
 static inline bool IsLittleEndian()
@@ -72,14 +74,16 @@ static inline bool IsLittleEndian()
 
 static const enum SampleFormat SampleFormat_S16 = IsLittleEndian() ? SampleFormat::S16_LE : SampleFormat::S16_BE;
 static const enum SampleFormat SampleFormat_S32 = IsLittleEndian() ? SampleFormat::S32_LE : SampleFormat::S32_BE;
+static const enum SampleFormat SampleFormat_S24_3 = IsLittleEndian() ? SampleFormat::S24_3LE : SampleFormat::S24_3BE;
 static const enum SampleFormat SampleFormat_FLOAT = IsLittleEndian() ? SampleFormat::FLOAT_LE : SampleFormat::FLOAT_BE;
 
 static inline const char *FormatToString(SampleFormat format)
 {
-    static const char *s_tbl[] = {
+    static const char *s_tbl[FORMAT_NUM] = {
         "BYTE",
         "S16_LE", "S16_BE",
         "S32_LE", "S32_BE",
+        "S24_3LE", "S24_3BE",
         "FLOAT_LE", "FLOAT_BE"
     };
     return s_tbl[format];
@@ -96,6 +100,9 @@ static inline size_t SamplesToBytes(SampleFormat format, unsigned int chNum, sam
     case SampleFormat::S32_LE:
     case SampleFormat::S32_BE:
         return samples * chNum * sizeof(int32_t);
+    case SampleFormat::S24_3LE:
+    case SampleFormat::S24_3BE:
+        return samples * chNum * 3;
     case SampleFormat::FLOAT_LE:
     case SampleFormat::FLOAT_BE:
         return samples * chNum * sizeof(float);
