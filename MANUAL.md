@@ -261,14 +261,15 @@ It should be a 'first' block in a route.
 
 ### 3.12 BlkFileWriter
 
-The BlkFileWriter block is able to write the mono or multi-interleaved-channels data from its unique input endpoint into a PCM audio file.
+The BlkFileWriter block is able to write the mono or multi-interleaved-channels data from its unique input endpoint into a PCM or WAV audio file.
 It should be a 'last' block in a route.
 
 - SO Name
   - "libblkfilewriter.so"
 - Creation Arguments
-  - FILEPATH
-  - Specially, when FILEPATH="--", the filewriter will write data to stdout.
+  - FILENAME
+    - if FILENAME="--", the filewriter will write audio data to stdout
+    - if FILENAME has the ".wav" suffix, the wav header will be added when route is stopped
 - SetParameter Arguments
   - None
 - GetParameter Arguments

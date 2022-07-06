@@ -442,3 +442,7 @@ Deleted RouteA
 
 **A**: 一个路由用一个线程处理数据。通常情况，“单路由多first块”可以工作地很好。在这种情况下，多输入以同样的步伐提供数据帧，并且它们不应该被相互阻塞。例如，一个输入是alsacapture，一个输入是filereader。
 需要用到“多路由”的场景是，当多个输入放在一个路由里运行会有机会相互阻塞时，那么它们就应该被分离到多个路由。例如，一个输入alsacapture，一个输入是echo-reference。
+
+## 基于百灵鸟的开源应用
+
+lark-apps仓库（<https://gitee.com/wksuper/lark-apps>）专门用于开发基于百灵鸟的开源应用。

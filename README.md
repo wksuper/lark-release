@@ -434,3 +434,7 @@ For applying on real product, you need to call ***lark*** APIs to make your own 
 **Q4**: What's the difference between "multi-routes" and "multi-first-blocks in one route"? If I have multiple inputs as the first blocks, how to select between "multi-routes" and "multi-first-blocks in one route"?
 
 **A**: One route has one thread to process data. Normally "multi-first-blocks in one route" can work well. In this case, the multiple inputs are able to provide frames at the same pace, and they shouldn't be blocked by each other. For example, one input is alsacapture, one input is filereader. The scenario that needs multi-routes is, if the multiple inputs running in one route have chance to block each other, then they need to be separated into multi-routes. For example, one input is alsacapture, one input is echo-reference.
+
+## lark-based Open Source Applications
+
+The lark-apps repository (<https://gitee.com/wksuper/lark-apps>) is dedicated to develop lark-based open source applications.
