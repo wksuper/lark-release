@@ -32,6 +32,14 @@
 #include <lark/lark.h>
 #include <klogging.h>
 
+#if defined(__APPLE__)
+#define SUFFIX ".dylib"
+#elif defined(_WIN32)
+#define SUFFIX ".dll"
+#else
+#define SUFFIX ".so"
+#endif
+
 int main()
 {
     const unsigned int rate = 48000;
@@ -41,8 +49,8 @@ int main()
     const lark::samples_t frameSizeInSamples = frameDuration_ms * rate / 1000;
     const unsigned int GAIN0_L_EPIDX = 0;
     const unsigned int GAIN0_R_EPIDX = 1;
-    const unsigned int GAIN1_L_EPIDX = 0;
-    const unsigned int GAIN1_R_EPIDX = 1;
+    const unsigned int GAIN1_L_EPIDX = 2;
+    const unsigned int GAIN1_R_EPIDX = 3;
 
     // 1. Create the playback route named RouteA
     lark::Route *route = lark::Lark::Instance().NewRoute("RouteA");
@@ -52,7 +60,7 @@ int main()
     }
 
     // 2. Create RouteA's blocks
-    const char *soFileName = "libblkfilereader.so";
+    const char *soFileName = "libblkfilereader" SUFFIX;
     lark::Parameters args;
     args.push_back("./examples/kanr-48000_16_2.pcm");
     lark::Block *blkFileReader0 = route->NewBlock(soFileName, true, false, args);
@@ -60,14 +68,14 @@ int main()
         KLOGE("Failed to new a block from %s", soFileName);
         return -1;
     }
-    soFileName = "libblkdeinterleave.so";
+    soFileName = "libblkdeinterleave" SUFFIX;
     lark::Block *blkDeinterleave0 = route->NewBlock(soFileName, false, false);
     if (!blkDeinterleave0) {
         KLOGE("Failed to new a block from %s", soFileName);
         return -1;
     }
 
-    soFileName = "libblkfilereader.so";
+    soFileName = "libblkfilereader" SUFFIX;
     args.clear();
     args.push_back("./examples/pacificrim-48000_16_2.pcm");
     lark::Block *blkFileReader1 = route->NewBlock(soFileName,  true, false, args);
@@ -75,26 +83,21 @@ int main()
         KLOGE("Failed to new a block from %s", soFileName);
         return -1;
     }
-    soFileName = "libblkdeinterleave.so";
+    soFileName = "libblkdeinterleave" SUFFIX;
     lark::Block *blkDeinterleave1 = route->NewBlock(soFileName, false, false);
     if (!blkDeinterleave1) {
         KLOGE("Failed to new a block from %s", soFileName);
         return -1;
     }
 
-    soFileName = "libblkgain.so";
-    lark::Block *blkGain0 = route->NewBlock(soFileName, false, false);
-    if (!blkGain0) {
-        KLOGE("Failed to new a block from %s", soFileName);
-        return -1;
-    }
-    lark::Block *blkGain1 = route->NewBlock(soFileName, false, false);
-    if (!blkGain1) {
+    soFileName = "libblkgain" SUFFIX;
+    lark::Block *blkGain = route->NewBlock(soFileName, false, false);
+    if (!blkGain) {
         KLOGE("Failed to new a block from %s", soFileName);
         return -1;
     }
 
-    soFileName = "libblkmixer.so";
+    soFileName = "libblkmixer" SUFFIX;
     lark::Block *blkMixerL = route->NewBlock(soFileName, false, false);
     if (!blkMixerL) {
         KLOGE("Failed to new a block from %s", soFileName);
@@ -106,16 +109,16 @@ int main()
         return -1;
     }
 
-    soFileName = "libblkinterleave.so";
+    soFileName = "libblkinterleave" SUFFIX;
     lark::Block *blkInterleave = route->NewBlock(soFileName, false, false);
     if (!blkInterleave) {
         KLOGE("Failed to new a block from %s", soFileName);
         return -1;
     }
 
-    soFileName = "libblkalsaplayback.so";
-    lark::Block *blkAlsaPlayback = route->NewBlock(soFileName, false, true);
-    if (!blkAlsaPlayback) {
+    soFileName = "libblkpaplayback" SUFFIX;
+    lark::Block *blkPlayback = route->NewBlock(soFileName, false, true);
+    if (!blkPlayback) {
         KLOGE("Failed to new a block from %s", soFileName);
         return -1;
     }
@@ -125,11 +128,11 @@ int main()
         KLOGE("Failed to new a link");
         return -1;
     }
-    if (!route->NewLink(rate, format, 1, frameSizeInSamples, blkDeinterleave0, 0, blkGain0, GAIN0_L_EPIDX)) {
+    if (!route->NewLink(rate, format, 1, frameSizeInSamples, blkDeinterleave0, 0, blkGain, GAIN0_L_EPIDX)) {
         KLOGE("Failed to new a link");
         return -1;
     }
-    if (!route->NewLink(rate, format, 1, frameSizeInSamples, blkDeinterleave0, 1, blkGain0, GAIN0_R_EPIDX)) {
+    if (!route->NewLink(rate, format, 1, frameSizeInSamples, blkDeinterleave0, 1, blkGain, GAIN0_R_EPIDX)) {
         KLOGE("Failed to new a link");
         return -1;
     }
@@ -137,27 +140,27 @@ int main()
         KLOGE("Failed to new a link");
         return -1;
     }
-    if (!route->NewLink(rate, format, 1, frameSizeInSamples, blkDeinterleave1, 0, blkGain1, GAIN1_L_EPIDX)) {
+    if (!route->NewLink(rate, format, 1, frameSizeInSamples, blkDeinterleave1, 0, blkGain, GAIN1_L_EPIDX)) {
         KLOGE("Failed to new a link");
         return -1;
     }
-    if (!route->NewLink(rate, format, 1, frameSizeInSamples, blkDeinterleave1, 1, blkGain1, GAIN1_R_EPIDX)) {
+    if (!route->NewLink(rate, format, 1, frameSizeInSamples, blkDeinterleave1, 1, blkGain, GAIN1_R_EPIDX)) {
         KLOGE("Failed to new a link");
         return -1;
     }
-    if (!route->NewLink(rate, format, 1, frameSizeInSamples, blkGain0, GAIN0_L_EPIDX, blkMixerL, 0)) {
+    if (!route->NewLink(rate, format, 1, frameSizeInSamples, blkGain, GAIN0_L_EPIDX, blkMixerL, 0)) {
         KLOGE("Failed to new a link");
         return -1;
     }
-    if (!route->NewLink(rate, format, 1, frameSizeInSamples, blkGain0, GAIN0_R_EPIDX, blkMixerR, 0)) {
+    if (!route->NewLink(rate, format, 1, frameSizeInSamples, blkGain, GAIN0_R_EPIDX, blkMixerR, 0)) {
         KLOGE("Failed to new a link");
         return -1;
     }
-    if (!route->NewLink(rate, format, 1, frameSizeInSamples, blkGain1, GAIN1_L_EPIDX, blkMixerL, 1)) {
+    if (!route->NewLink(rate, format, 1, frameSizeInSamples, blkGain, GAIN1_L_EPIDX, blkMixerL, 1)) {
         KLOGE("Failed to new a link");
         return -1;
     }
-    if (!route->NewLink(rate, format, 1, frameSizeInSamples, blkGain1, GAIN1_R_EPIDX, blkMixerR, 1)) {
+    if (!route->NewLink(rate, format, 1, frameSizeInSamples, blkGain, GAIN1_R_EPIDX, blkMixerR, 1)) {
         KLOGE("Failed to new a link");
         return -1;
     }
@@ -169,7 +172,7 @@ int main()
         KLOGE("Failed to new a link");
         return -1;
     }
-    if (!route->NewLink(rate, format, 2, frameSizeInSamples, blkInterleave, 0, blkAlsaPlayback, 0)) {
+    if (!route->NewLink(rate, format, 2, frameSizeInSamples, blkInterleave, 0, blkPlayback, 0)) {
         KLOGE("Failed to new a link");
         return -1;
     }

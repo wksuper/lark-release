@@ -61,7 +61,7 @@ c++:
 
 ```c++
 lark::Parameters args{ "3", "0.707", "8", "0.5" };
-route->SetPrameter(blk, 1, args);
+route->SetParameter(blk, 1, args);
 ```
 
 shell:

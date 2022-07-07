@@ -79,26 +79,96 @@ The source code of this example is shown in [larkexample1.cpp](https://gitee.com
 ```
 RouteA
 
- libblkfilereader.so   libblkdeinterleave.so   libblkgain.so           libblkmixer.so       libblkinterleave.so     libblkalsaplayback.so
+ libblkfilereader.so   libblkdeinterleave.so   libblkgain.so           libblkmixer.so       libblkinterleave.so     libblkpaplayback.so
 
   *****************     ******************     *************           **************       *******************      ******************
   *               *     *                *0-->0*           *0-------->0*            *0---->0*                 *      *                *
-  * filereader_0  *0-->0* deinterleave_0 *1-->1*   gain_0  *1---+      *   mixer_0  *       *   interleave_0  *0--->0* alsaplayback_0 *
+  * filereader_0  *0-->0* deinterleave_0 *1-->1*           *1---+      *   mixer_0  *       *   interleave_0  *0--->0*  paplayback_0  *
   *               *     *                *     *           *    | +-->1*            *   +->1*                 *      *                *
-  *****************     ******************     *************    | |    **************   |   *******************      ******************
-                                                                | |                     |
-  *****************     ******************     *************    | |    **************   |
+  *****************     ******************     *           *    | |    **************   |   *******************      ******************
+                                               *   gain_0  *    | |                     |
+  *****************     ******************     *           *    | |    **************   |
   *               *     *                *     *           *    +-|-->0*            *0--+
-  * filereader_1  *0-->0* deinterleave_0 *0-->0*   gain_1  *0-----+    *   mixer_1  *
-  *               *     *                *1-->1*           *1-------->1*            *
+  * filereader_1  *0-->0* deinterleave_0 *0-->2*           *2-----+    *   mixer_1  *
+  *               *     *                *1-->3*           *3-------->1*            *
   *****************     ******************     *************           **************
 ```
+
+To run example2, the ***PortAudio*** library is needed first.
+
+```bash
+$ sudo apt install libportaudio2
+```
+
+Run example2:
 
 ```bash
 $ x86_64-linux-gnu/bin/larkexample2
 ```
 
 If no error, the two files mixed music should be started to play.
+
+Launch another shell where you can adjust their volume gains via `lkdb`.
+
+```bash
+$ lkdb status     # Shows lark status
+RouteA is RUNNING, 319 frames processed OK, 0 error frame
+	blkmixer_1
+		(I00) <-- lnk_7    48000Hz   S16_LE  1ch    960samples/frame
+		(I01) <-- lnk_9    48000Hz   S16_LE  1ch    960samples/frame
+		(O00) --> lnk_11   48000Hz   S16_LE  1ch    960samples/frame
+	blkdeinterleave_1
+		(I01) <-- lnk_3    48000Hz   S16_LE  2ch    960samples/frame
+		(O00) --> lnk_4    48000Hz   S16_LE  1ch    960samples/frame
+		(O01) --> lnk_5    48000Hz   S16_LE  1ch    960samples/frame
+	blkmixer_0
+		(I00) <-- lnk_6    48000Hz   S16_LE  1ch    960samples/frame
+		(I01) <-- lnk_8    48000Hz   S16_LE  1ch    960samples/frame
+		(O00) --> lnk_10   48000Hz   S16_LE  1ch    960samples/frame
+	blkinterleave_0
+		(I00) <-- lnk_10   48000Hz   S16_LE  1ch    960samples/frame
+		(I01) <-- lnk_11   48000Hz   S16_LE  1ch    960samples/frame
+		(O00) --> lnk_12   48000Hz   S16_LE  2ch    960samples/frame
+	blkfilereader_0
+		(O00) --> lnk_0    48000Hz   S16_LE  2ch    960samples/frame
+	blkdeinterleave_0
+		(I00) <-- lnk_0    48000Hz   S16_LE  2ch    960samples/frame
+		(O00) --> lnk_1    48000Hz   S16_LE  1ch    960samples/frame
+		(O01) --> lnk_2    48000Hz   S16_LE  1ch    960samples/frame
+	blkfilereader_1
+		(O00) --> lnk_3    48000Hz   S16_LE  2ch    960samples/frame
+	blkgain_0
+		(I00) <-- lnk_1    48000Hz   S16_LE  1ch    960samples/frame
+		(I01) <-- lnk_2    48000Hz   S16_LE  1ch    960samples/frame
+		(I02) <-- lnk_4    48000Hz   S16_LE  1ch    960samples/frame
+		(I03) <-- lnk_5    48000Hz   S16_LE  1ch    960samples/frame
+		(O00) --> lnk_6    48000Hz   S16_LE  1ch    960samples/frame
+		(O01) --> lnk_7    48000Hz   S16_LE  1ch    960samples/frame
+		(O02) --> lnk_8    48000Hz   S16_LE  1ch    960samples/frame
+		(O03) --> lnk_9    48000Hz   S16_LE  1ch    960samples/frame
+	blkpaplayback_0
+		(I00) <-- lnk_12   48000Hz   S16_LE  2ch    960samples/frame
+
+No fifo
+```
+
+```bash
+$ lkdb setparam RouteA blkgain_0 1 0 0.5    # Output volume of kanr-48000_16_2.pcm left channel should be lower
+$ lkdb setparam RouteA blkgain_0 1 1 0.5    # Output volume of kanr-48000_16_2.pcm right channel should be lower
+$ lkdb setparam RouteA blkgain_0 1 0 0.0    # Output volume of kanr-48000_16_2.pcm left channel should be muted
+$ lkdb setparam RouteA blkgain_0 1 1 0.0    # Output volume of kanr-48000_16_2.pcm right channel should be muted
+
+$ lkdb setparam RouteA blkgain_0 1 2 0.5    # Output volume of pacificrim-48000_16_2.pcm left channel should be lower
+$ lkdb setparam RouteA blkgain_0 1 3 0.5    # Output volume of pacificrim-48000_16_2.pcm right channel should be lower
+$ lkdb setparam RouteA blkgain_0 1 2 0.0    # Output volume of pacificrim-48000_16_2.pcm left channel should be muted
+$ lkdb setparam RouteA blkgain_0 1 3 0.0    # Output volume of pacificrim-48000_16_2.pcm right channel should be muted
+
+$ lkdb setparam RouteA blkgain_0 1 0 1.0    # Output volume of kanr-48000_16_2.pcm left channel should be recovered back
+$ lkdb setparam RouteA blkgain_0 1 1 1.0    # Output volume of kanr-48000_16_2.pcm right channel should be recovered back
+
+$ lkdb setparam RouteA blkgain_0 1 2 1.0    # Output volume of pacificrim-48000_16_2.pcm left channel should be recovered back
+$ lkdb setparam RouteA blkgain_0 1 3 1.0    # Output volume of pacificrim-48000_16_2.pcm right channel should be recovered back
+```
 
 The source code of this example is shown in [larkexample2.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample2.cpp).
 
@@ -202,13 +272,11 @@ RouteA
  libblkfilereader.dylib  libblkformatdapter.dylib   libblkdeinterleave.dylib  libblkmixer.dylib      libblksoxeffect.dylib       libblkinterleave.dylib  libblkfilewriter.dylib
 
   *******************     **********************     *********************     **************     ***************************     *******************     *******************
-  *                 *     *                    *     *                   *     *            *     * blksoxeffect_highpass_0 *     *                 *     *                 *
-  *                 *     *                    *     *                   *0-->0*            *0-->0*                         *0-->0*                 *     *                 *
-  *                 *     *                    *     *                   *     *            *     ***************************     *                 *     *                 *
+  *                 *     *                    *     *                   *     *            *0-->0* blksoxeffect_highpass_0 *0-->0*                 *     *                 *
+  *                 *     *                    *     *                   *0-->0*            *     ***************************     *                 *     *                 *
   * blkfilereader_0 *0-->0* blkformatadapter_0 *0-->0* blkdeinterleave_0 *     * blkmixer_0 *                                     * blkinterleave_0 *0-->0* blkfilewriter_0 *
-  *                 *     *                    *     *                   *     *            *     ***************************     *                 *     *     (stdout)    *
-  *                 *     *                    *     *                   *1-->1*            *1-->0*                         *0-->1*                 *     *                 *
-  *                 *     *                    *     *                   *     *            *     * blksoxeffect_lowpass_0  *     *                 *     *                 *
+  *                 *     *                    *     *                   *1-->1*            *     ***************************     *                 *     *     (stdout)    *
+  *                 *     *                    *     *                   *     *            *1-->0* blksoxeffect_lowpass_0  *0-->1*                 *     *                 *
   *******************     **********************     *********************     **************     ***************************     *******************     *******************
 ```
 
@@ -232,7 +300,7 @@ If no error, playback will be started, and on the ffplay screen, audio spectrum 
 In the other shell,
 
 ```bash
-$ lkdb status                                  # Shows lark status
+$ lkdb status    # Shows lark status. Found that the name of higpass/lowpass filter block is 'blksoxeffect_highpass_0'/'blksoxeffect_lowpass_0' respectively.
 ```
 
 ```bash
@@ -297,94 +365,9 @@ Usage:
     - Disable dumping log & data when DIRECTORY is --
 ```
 
-For example, when running example2, in the other shell, you can tune example2's volume gains via `lkdb`.
+Besides real-time printing status, setting parameters shown in the examples above, `lkdb` can also manipulate audio routes, take a snapshot of the routes, change logging level, setting audio data dump, etc.
 
-```bash
-$ lkdb status                               # Shows lark status
-RouteA is RUNNING, 625 frames processed OK, 0 error frame
-	blkfilereader_0
-		(O00) --> lnk_0    48000Hz   S16_LE  2ch    960samples/frame
-	blkdeinterleave_0
-		(I00) <-- lnk_0    48000Hz   S16_LE  2ch    960samples/frame
-		(O00) --> lnk_1    48000Hz   S16_LE  1ch    960samples/frame
-		(O01) --> lnk_2    48000Hz   S16_LE  1ch    960samples/frame
-	blkfilereader_1
-		(O00) --> lnk_3    48000Hz   S16_LE  2ch    960samples/frame
-	blkdeinterleave_1
-		(I01) <-- lnk_3    48000Hz   S16_LE  2ch    960samples/frame
-		(O00) --> lnk_4    48000Hz   S16_LE  1ch    960samples/frame
-		(O01) --> lnk_5    48000Hz   S16_LE  1ch    960samples/frame
-	blkgain_0
-		(I00) <-- lnk_1    48000Hz   S16_LE  1ch    960samples/frame
-		(I01) <-- lnk_2    48000Hz   S16_LE  1ch    960samples/frame
-		(O00) --> lnk_6    48000Hz   S16_LE  1ch    960samples/frame
-		(O01) --> lnk_7    48000Hz   S16_LE  1ch    960samples/frame
-	blkgain_1
-		(I00) <-- lnk_4    48000Hz   S16_LE  1ch    960samples/frame
-		(I01) <-- lnk_5    48000Hz   S16_LE  1ch    960samples/frame
-		(O00) --> lnk_8    48000Hz   S16_LE  1ch    960samples/frame
-		(O01) --> lnk_9    48000Hz   S16_LE  1ch    960samples/frame
-	blkmixer_0
-		(I00) <-- lnk_6    48000Hz   S16_LE  1ch    960samples/frame
-		(I01) <-- lnk_8    48000Hz   S16_LE  1ch    960samples/frame
-		(O00) --> lnk_10   48000Hz   S16_LE  1ch    960samples/frame
-	blkmixer_1
-		(I00) <-- lnk_7    48000Hz   S16_LE  1ch    960samples/frame
-		(I01) <-- lnk_9    48000Hz   S16_LE  1ch    960samples/frame
-		(O00) --> lnk_11   48000Hz   S16_LE  1ch    960samples/frame
-	blkinterleave_0
-		(I00) <-- lnk_10   48000Hz   S16_LE  1ch    960samples/frame
-		(I01) <-- lnk_11   48000Hz   S16_LE  1ch    960samples/frame
-		(O00) --> lnk_12   48000Hz   S16_LE  2ch    960samples/frame
-	blkalsaplayback_0
-		(I00) <-- lnk_12   48000Hz   S16_LE  2ch    960samples/frame
-```
-
-```bash
-$ lkdb setparam RouteA blkgain_0 1 0 0.5    # Output volume of kanr-48000_16_2.pcm left channel should be lower
-$ lkdb setparam RouteA blkgain_0 1 1 0.5    # Output volume of kanr-48000_16_2.pcm right channel should be lower
-$ lkdb setparam RouteA blkgain_0 1 0 0.0    # Output volume of kanr-48000_16_2.pcm left channel should be muted
-$ lkdb setparam RouteA blkgain_0 1 1 0.0    # Output volume of kanr-48000_16_2.pcm right channel should be muted
-
-$ lkdb setparam RouteA blkgain_1 1 0 0.5    # Output volume of pacificrim-48000_16_2.pcm left channel should be lower
-$ lkdb setparam RouteA blkgain_1 1 1 0.5    # Output volume of pacificrim-48000_16_2.pcm right channel should be lower
-$ lkdb setparam RouteA blkgain_1 1 0 0.0    # Output volume of pacificrim-48000_16_2.pcm left channel should be muted
-$ lkdb setparam RouteA blkgain_1 1 1 0.0    # Output volume of pacificrim-48000_16_2.pcm right channel should be muted
-
-$ lkdb setparam RouteA blkgain_0 1 0 1.0    # Output volume of kanr-48000_16_2.pcm left channel should be recovered back
-$ lkdb setparam RouteA blkgain_0 1 1 1.0    # Output volume of kanr-48000_16_2.pcm right channel should be recovered back
-
-$ lkdb setparam RouteA blkgain_1 1 0 1.0    # Output volume of pacificrim-48000_16_2.pcm left channel should be recovered back
-$ lkdb setparam RouteA blkgain_1 1 1 1.0    # Output volume of pacificrim-48000_16_2.pcm right channel should be recovered back
-```
-
-For another example, when running example3, in the other shell, you can take a snapshot of the routes via `lkdb`.
-
-```bash
-$ lkdb status --dot | dot -Tpng -o larkexample3.png
-```
-
-The routes snapshot will be saved to `larkexample3.png`.
-
-![larkexample3.png](./examples/larkexample3.png)
-
-Note: This requires graphviz(dot) to be installed on your machine.
-
-```bash
-$ sudo apt install graphviz
-```
-
-## Make Your Own Audio Route(s)
-
-### Step 1
-
-Design the route(s) in your mind. The prebuilt blocks(like gain, mixer, etc.) can be used directly. If you need custom block(s), you can compile the so library file(s) by yourself. [BlkPassthrough.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/BlkPassthrough.cpp) is an example of block source code. See [MANUAL.md - 4 Build Your Own Block](https://gitee.com/wksuper/lark-release/blob/master/MANUAL.md#4-build-your-own-block) for more detail.
-
-### Step 2
-
-For test(try run) only purpose, `lkdb` is qualified to do that.
-
-For example, to run the same route as example1's, you can also use `lkdb` to create route, start/stop route, delete route.
+### No coding needed to run the same route as example1's via `lkdb`
 
 In one shell,
 
@@ -413,9 +396,33 @@ Deleted RouteA
 
 The source code of this example is shown in [larkexample0.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample0.cpp).
 
-### Step 3
+### Take a snapshot of example3's routes via `lkdb`
 
-For applying on real product, you need to call ***lark*** APIs to make your own audio route(s) in your process. [Examples](https://gitee.com/wksuper/lark-release/tree/master/examples) have been listed. Refer to [User Manual](https://gitee.com/wksuper/lark-release/blob/master/MANUAL.md) for detail.
+While running example3,
+
+```bash
+$ lkdb status --dot | dot -Tpng -o larkexample3.png
+```
+
+The routes snapshot will be saved to `larkexample3.png`.
+
+![larkexample3.png](./examples/larkexample3.png)
+
+Note: This requires graphviz(dot) to be installed on your machine.
+
+```bash
+$ sudo apt install graphviz
+```
+
+## Make Your Own Audio Route(s)
+
+### Step 1
+
+Design the route(s) in your mind. The prebuilt blocks(like gain, mixer, etc.) can be used directly. If you need custom block(s), you can compile the so library file(s) by yourself. [BlkPassthrough.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/BlkPassthrough.cpp) is an example of block source code. See [MANUAL.md - 4 Build Your Own Block](https://gitee.com/wksuper/lark-release/blob/master/MANUAL.md#4-build-your-own-block) for more detail.
+
+### Step 2
+
+Call ***lark*** APIs to make your route(s) implemented in your process. [Examples](https://gitee.com/wksuper/lark-release/tree/master/examples) have been listed. Refer to [User Manual](https://gitee.com/wksuper/lark-release/blob/master/MANUAL.md) for detail.
 
 ## FAQs
 

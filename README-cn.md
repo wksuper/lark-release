@@ -79,26 +79,96 @@ $ x86_64-linux-gnu/bin/larkexample1
 ```
 RouteA
 
- libblkfilereader.so   libblkdeinterleave.so   libblkgain.so           libblkmixer.so       libblkinterleave.so     libblkalsaplayback.so
+ libblkfilereader.so   libblkdeinterleave.so   libblkgain.so           libblkmixer.so       libblkinterleave.so     libblkpaplayback.so
 
   *****************     ******************     *************           **************       *******************      ******************
   *               *     *                *0-->0*           *0-------->0*            *0---->0*                 *      *                *
-  * filereader_0  *0-->0* deinterleave_0 *1-->1*   gain_0  *1---+      *   mixer_0  *       *   interleave_0  *0--->0* alsaplayback_0 *
+  * filereader_0  *0-->0* deinterleave_0 *1-->1*           *1---+      *   mixer_0  *       *   interleave_0  *0--->0*  paplayback_0  *
   *               *     *                *     *           *    | +-->1*            *   +->1*                 *      *                *
-  *****************     ******************     *************    | |    **************   |   *******************      ******************
-                                                                | |                     |
-  *****************     ******************     *************    | |    **************   |
+  *****************     ******************     *           *    | |    **************   |   *******************      ******************
+                                               *   gain_0  *    | |                     |
+  *****************     ******************     *           *    | |    **************   |
   *               *     *                *     *           *    +-|-->0*            *0--+
-  * filereader_1  *0-->0* deinterleave_0 *0-->0*   gain_1  *0-----+    *   mixer_1  *
-  *               *     *                *1-->1*           *1-------->1*            *
+  * filereader_1  *0-->0* deinterleave_0 *0-->2*           *2-----+    *   mixer_1  *
+  *               *     *                *1-->3*           *3-------->1*            *
   *****************     ******************     *************           **************
 ```
+
+运行例2之前，需要先安装 ***PortAudio*** 库。
+
+```bash
+$ sudo apt install libportaudio2
+```
+
+运行例2：
 
 ```bash
 $ x86_64-linux-gnu/bin/larkexample2
 ```
 
 如果没错误的话，两个音乐文件应该开始混合播放输出了。
+
+开启另一个shell，在里面您可以通过`lkdb`调节他们的音量增益。
+
+```bash
+$ lkdb status     # 显示百灵鸟状态
+RouteA is RUNNING, 319 frames processed OK, 0 error frame
+	blkmixer_1
+		(I00) <-- lnk_7    48000Hz   S16_LE  1ch    960samples/frame
+		(I01) <-- lnk_9    48000Hz   S16_LE  1ch    960samples/frame
+		(O00) --> lnk_11   48000Hz   S16_LE  1ch    960samples/frame
+	blkdeinterleave_1
+		(I01) <-- lnk_3    48000Hz   S16_LE  2ch    960samples/frame
+		(O00) --> lnk_4    48000Hz   S16_LE  1ch    960samples/frame
+		(O01) --> lnk_5    48000Hz   S16_LE  1ch    960samples/frame
+	blkmixer_0
+		(I00) <-- lnk_6    48000Hz   S16_LE  1ch    960samples/frame
+		(I01) <-- lnk_8    48000Hz   S16_LE  1ch    960samples/frame
+		(O00) --> lnk_10   48000Hz   S16_LE  1ch    960samples/frame
+	blkinterleave_0
+		(I00) <-- lnk_10   48000Hz   S16_LE  1ch    960samples/frame
+		(I01) <-- lnk_11   48000Hz   S16_LE  1ch    960samples/frame
+		(O00) --> lnk_12   48000Hz   S16_LE  2ch    960samples/frame
+	blkfilereader_0
+		(O00) --> lnk_0    48000Hz   S16_LE  2ch    960samples/frame
+	blkdeinterleave_0
+		(I00) <-- lnk_0    48000Hz   S16_LE  2ch    960samples/frame
+		(O00) --> lnk_1    48000Hz   S16_LE  1ch    960samples/frame
+		(O01) --> lnk_2    48000Hz   S16_LE  1ch    960samples/frame
+	blkfilereader_1
+		(O00) --> lnk_3    48000Hz   S16_LE  2ch    960samples/frame
+	blkgain_0
+		(I00) <-- lnk_1    48000Hz   S16_LE  1ch    960samples/frame
+		(I01) <-- lnk_2    48000Hz   S16_LE  1ch    960samples/frame
+		(I02) <-- lnk_4    48000Hz   S16_LE  1ch    960samples/frame
+		(I03) <-- lnk_5    48000Hz   S16_LE  1ch    960samples/frame
+		(O00) --> lnk_6    48000Hz   S16_LE  1ch    960samples/frame
+		(O01) --> lnk_7    48000Hz   S16_LE  1ch    960samples/frame
+		(O02) --> lnk_8    48000Hz   S16_LE  1ch    960samples/frame
+		(O03) --> lnk_9    48000Hz   S16_LE  1ch    960samples/frame
+	blkpaplayback_0
+		(I00) <-- lnk_12   48000Hz   S16_LE  2ch    960samples/frame
+
+No fifo
+```
+
+```bash
+$ lkdb setparam RouteA blkgain_0 1 0 0.5    # kanr-48000_16_2.pcm左声道的输出音量变低
+$ lkdb setparam RouteA blkgain_0 1 1 0.5    # kanr-48000_16_2.pcm右声道的输出音量变低
+$ lkdb setparam RouteA blkgain_0 1 0 0.0    # kanr-48000_16_2.pcm左声道的输出静音
+$ lkdb setparam RouteA blkgain_0 1 1 0.0    # kanr-48000_16_2.pcm右声道的输出静音
+
+$ lkdb setparam RouteA blkgain_0 1 2 0.5    # pacificrim-48000_16_2.pcm左声道的输出音量变低
+$ lkdb setparam RouteA blkgain_0 1 3 0.5    # pacificrim-48000_16_2.pcm右声道的输出音量变低
+$ lkdb setparam RouteA blkgain_0 1 2 0.0    # pacificrim-48000_16_2.pcm左声道的输出静音
+$ lkdb setparam RouteA blkgain_0 1 3 0.0    # pacificrim-48000_16_2.pcm右声道的输出静音
+
+$ lkdb setparam RouteA blkgain_0 1 0 1.0    # kanr-48000_16_2.pcm左声道的输出音量恢复
+$ lkdb setparam RouteA blkgain_0 1 1 1.0    # kanr-48000_16_2.pcm右声道的输出音量恢复
+
+$ lkdb setparam RouteA blkgain_0 1 2 1.0    # pacificrim-48000_16_2.pcm左声道的输出音量恢复
+$ lkdb setparam RouteA blkgain_0 1 3 1.0    # pacificrim-48000_16_2.pcm右声道的输出音量恢复
+```
 
 这个例子的源代码在此：[larkexample2.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample2.cpp)。
 
@@ -202,13 +272,11 @@ RouteA
  libblkfilereader.dylib  libblkformatdapter.dylib   libblkdeinterleave.dylib  libblkmixer.dylib      libblksoxeffect.dylib       libblkinterleave.dylib  libblkfilewriter.dylib
 
   *******************     **********************     *********************     **************     ***************************     *******************     *******************
-  *                 *     *                    *     *                   *     *            *     * blksoxeffect_highpass_0 *     *                 *     *                 *
-  *                 *     *                    *     *                   *0-->0*            *0-->0*                         *0-->0*                 *     *                 *
-  *                 *     *                    *     *                   *     *            *     ***************************     *                 *     *                 *
+  *                 *     *                    *     *                   *     *            *0-->0* blksoxeffect_highpass_0 *0-->0*                 *     *                 *
+  *                 *     *                    *     *                   *0-->0*            *     ***************************     *                 *     *                 *
   * blkfilereader_0 *0-->0* blkformatadapter_0 *0-->0* blkdeinterleave_0 *     * blkmixer_0 *                                     * blkinterleave_0 *0-->0* blkfilewriter_0 *
-  *                 *     *                    *     *                   *     *            *     ***************************     *                 *     *     (stdout)    *
-  *                 *     *                    *     *                   *1-->1*            *1-->0*                         *0-->1*                 *     *                 *
-  *                 *     *                    *     *                   *     *            *     * blksoxeffect_lowpass_0  *     *                 *     *                 *
+  *                 *     *                    *     *                   *1-->1*            *     ***************************     *                 *     *     (stdout)    *
+  *                 *     *                    *     *                   *     *            *1-->0* blksoxeffect_lowpass_0  *0-->1*                 *     *                 *
   *******************     **********************     *********************     **************     ***************************     *******************     *******************
 ```
 
@@ -232,7 +300,7 @@ $ x86_64-apple-darwin/bin/larkexample7 | ffplay -i pipe:0 -f s32le -ar 48000 -ac
 在另一个shell里，
 
 ```bash
-$ lkdb status                                  # 显示百灵鸟状态
+$ lkdb status    # 显示百灵鸟状态，找到高通/低通滤波器的块名称分别为'blksoxeffect_highpass_0'/'blksoxeffect_lowpass_0'
 ```
 
 ```bash
@@ -297,96 +365,9 @@ Usage:
     - Disable dumping log & data when DIRECTORY is --
 ```
 
-举个例子，当例2运行时，在另外一个shell里，您可以通过`lkdb`调节例2的音量。
+除了以上例子中显示的实时打印状态、设定参数功能之外，`lkdb`还可以操作音频路由、抓取路由快照、改变日志等级、设定音频数据转储等。
 
-```bash
-$ lkdb status                               # 显示百灵鸟状态
-RouteA is RUNNING, 625 frames processed OK, 0 error frame
-	blkfilereader_0
-		(O00) --> lnk_0    48000Hz   S16_LE  2ch    960samples/frame
-	blkdeinterleave_0
-		(I00) <-- lnk_0    48000Hz   S16_LE  2ch    960samples/frame
-		(O00) --> lnk_1    48000Hz   S16_LE  1ch    960samples/frame
-		(O01) --> lnk_2    48000Hz   S16_LE  1ch    960samples/frame
-	blkfilereader_1
-		(O00) --> lnk_3    48000Hz   S16_LE  2ch    960samples/frame
-	blkdeinterleave_1
-		(I01) <-- lnk_3    48000Hz   S16_LE  2ch    960samples/frame
-		(O00) --> lnk_4    48000Hz   S16_LE  1ch    960samples/frame
-		(O01) --> lnk_5    48000Hz   S16_LE  1ch    960samples/frame
-	blkgain_0
-		(I00) <-- lnk_1    48000Hz   S16_LE  1ch    960samples/frame
-		(I01) <-- lnk_2    48000Hz   S16_LE  1ch    960samples/frame
-		(O00) --> lnk_6    48000Hz   S16_LE  1ch    960samples/frame
-		(O01) --> lnk_7    48000Hz   S16_LE  1ch    960samples/frame
-	blkgain_1
-		(I00) <-- lnk_4    48000Hz   S16_LE  1ch    960samples/frame
-		(I01) <-- lnk_5    48000Hz   S16_LE  1ch    960samples/frame
-		(O00) --> lnk_8    48000Hz   S16_LE  1ch    960samples/frame
-		(O01) --> lnk_9    48000Hz   S16_LE  1ch    960samples/frame
-	blkmixer_0
-		(I00) <-- lnk_6    48000Hz   S16_LE  1ch    960samples/frame
-		(I01) <-- lnk_8    48000Hz   S16_LE  1ch    960samples/frame
-		(O00) --> lnk_10   48000Hz   S16_LE  1ch    960samples/frame
-	blkmixer_1
-		(I00) <-- lnk_7    48000Hz   S16_LE  1ch    960samples/frame
-		(I01) <-- lnk_9    48000Hz   S16_LE  1ch    960samples/frame
-		(O00) --> lnk_11   48000Hz   S16_LE  1ch    960samples/frame
-	blkinterleave_0
-		(I00) <-- lnk_10   48000Hz   S16_LE  1ch    960samples/frame
-		(I01) <-- lnk_11   48000Hz   S16_LE  1ch    960samples/frame
-		(O00) --> lnk_12   48000Hz   S16_LE  2ch    960samples/frame
-	blkalsaplayback_0
-		(I00) <-- lnk_12   48000Hz   S16_LE  2ch    960samples/frame
-```
-
-```bash
-$ lkdb setparam RouteA blkgain_0 1 0 0.5    # kanr-48000_16_2.pcm左声道的输出音量变低
-$ lkdb setparam RouteA blkgain_0 1 1 0.5    # kanr-48000_16_2.pcm右声道的输出音量变低
-$ lkdb setparam RouteA blkgain_0 1 0 0.0    # kanr-48000_16_2.pcm左声道的输出静音
-$ lkdb setparam RouteA blkgain_0 1 1 0.0    # kanr-48000_16_2.pcm右声道的输出静音
-
-$ lkdb setparam RouteA blkgain_1 1 0 0.5    # pacificrim-48000_16_2.pcm左声道的输出音量变低
-$ lkdb setparam RouteA blkgain_1 1 1 0.5    # pacificrim-48000_16_2.pcm右声道的输出音量变低
-$ lkdb setparam RouteA blkgain_1 1 0 0.0    # pacificrim-48000_16_2.pcm左声道的输出静音
-$ lkdb setparam RouteA blkgain_1 1 1 0.0    # pacificrim-48000_16_2.pcm右声道的输出静音
-
-$ lkdb setparam RouteA blkgain_0 1 0 1.0    # kanr-48000_16_2.pcm左声道的输出音量恢复
-$ lkdb setparam RouteA blkgain_0 1 1 1.0    # kanr-48000_16_2.pcm右声道的输出音量恢复
-
-$ lkdb setparam RouteA blkgain_1 1 0 1.0    # pacificrim-48000_16_2.pcm左声道的输出音量恢复
-$ lkdb setparam RouteA blkgain_1 1 1 1.0    # pacificrim-48000_16_2.pcm右声道的输出音量恢复
-```
-
-再举个例子，当例3运行时，在另外一个shell里，您可以通过`lkdb`抓取路由快照。
-
-```bash
-$ lkdb status --dot | dot -Tpng -o larkexample3.png
-```
-
-路由快照会被存成文件`larkexample3.png`。
-
-![larkexample3.png](./examples/larkexample3.png)
-
-注意：这个功能需要graphviz(dot)先安装到您的机器。
-
-```bash
-$ sudo apt install graphviz
-```
-
-## 创建您自己的音频路由
-
-### 第1步
-
-在您的脑海中设计好路由。那些预编译好的块（像gain, mixer等）可以直接使用。如果您想要客制化的块，您可以自行编译动态库。
-[BlkPassthrough.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/BlkPassthrough.cpp)是一个块源码的例子。
-参考[MANUAL.md - 4 Build Your Own Block](https://gitee.com/wksuper/lark-release/blob/master/MANUAL.md#4-build-your-own-block)以获取更多信息。
-
-### 第2步
-
-如果只是尝试为目的，`lkdb`就可以做了。
-
-例如，想要运行跟例1一样的路由，您也可以使用`lkdb`来创建路由，启动/停止路由，删除路由。
+### 不用写代码编译，通过`lkdb`跑一个跟例1一样的路由
 
 在一个shell里，
 
@@ -415,9 +396,35 @@ Deleted RouteA
 
 这个例子的源代码在此：[larkexample0.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample0.cpp)。
 
-### 第3步
+### 通过`lkdb`抓取例3路由的快照
 
-要应用在真实产品中，您需要在您的进程里调用 ***百灵鸟*** 的API来创建您自己的音频路由。[样例](https://gitee.com/wksuper/lark-release/tree/master/examples)已经列出。参考[用户手册](https://gitee.com/wksuper/lark-release/blob/master/MANUAL.md)以获取更多信息。
+当例3运行时，
+
+```bash
+$ lkdb status --dot | dot -Tpng -o larkexample3.png
+```
+
+路由快照会被存成文件`larkexample3.png`。
+
+![larkexample3.png](./examples/larkexample3.png)
+
+注意：这个功能需要graphviz(dot)先安装到您的机器。
+
+```bash
+$ sudo apt install graphviz
+```
+
+## 创建您自己的音频路由
+
+### 第1步
+
+在您的脑海中设计好路由。那些预编译好的块（像gain, mixer等）可以直接使用。如果您想要客制化的块，您可以自行编译动态库。
+[BlkPassthrough.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/BlkPassthrough.cpp)是一个块源码的例子。
+参考[MANUAL.md - 4 Build Your Own Block](https://gitee.com/wksuper/lark-release/blob/master/MANUAL.md#4-build-your-own-block)以获取更多信息。
+
+### 第2步
+
+在您的进程里调用 ***百灵鸟*** 的API来实现您的路由。[样例](https://gitee.com/wksuper/lark-release/tree/master/examples)已经列出。参考[用户手册](https://gitee.com/wksuper/lark-release/blob/master/MANUAL.md)以获取更多信息。
 
 ## 常见问题与回答
 
