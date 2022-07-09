@@ -444,4 +444,4 @@ Call ***lark*** APIs to make your route(s) implemented in your process. [Example
 
 ## lark-based Open Source Applications
 
-The lark-apps repository (<https://gitee.com/wksuper/lark-apps>) is dedicated to develop lark-based open source applications.
+- [kplay](https://gitee.com/wksuper/kplay) - A WAV File Player with Real-Time Sound Tuning

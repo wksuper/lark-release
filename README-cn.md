@@ -452,4 +452,4 @@ $ sudo apt install graphviz
 
 ## 基于百灵鸟的开源应用
 
-lark-apps仓库（<https://gitee.com/wksuper/lark-apps>）专门用于开发基于百灵鸟的开源应用。
+- [kplay](https://gitee.com/wksuper/kplay) - 一个可以实时调音的WAV文件播放器
