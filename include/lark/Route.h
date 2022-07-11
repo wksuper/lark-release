@@ -136,12 +136,13 @@ public:
 
     virtual void ExecuteActions(Action *actions, size_t n) = 0;
 
+    enum StopReason { USER_STOP, ERROR_STOP, EOF_STOP };
 
     class Callbacks {
     public:
-        virtual void OnStarted(Route *route);
-        virtual void OnStopped(Route *route);
-        virtual void OnExit(Route *route);
+        virtual void OnStarted();
+        virtual void OnStopped(StopReason reason);
+        virtual void OnExit();
 
         virtual ~Callbacks();
     };

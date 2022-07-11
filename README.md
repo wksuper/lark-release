@@ -2,9 +2,11 @@
 
 [English](https://gitee.com/wksuper/lark-release/blob/master/README.md) | [简体中文](https://gitee.com/wksuper/lark-release/blob/master/README-cn.md)
 
+## Introduction
+
 ***lark*** is a free, lite and powerful software audio DSP. It provides a flexible and scalable way to design audio route(s) with high efficiency, small footprint and low latency that enables you to build your audio system like building blocks.
 
-Main features (as of v0.13):
+### Main Features
 
 - Support realtime manipulating audio routes
   - Load/Unload blocks in real time
@@ -264,7 +266,7 @@ $ lkdb setparam RouteA blksoundtouch_0 3 1.0    # Sound rate goes normal
 
 The source code of this example is shown in [larkexample5.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample5.cpp).
 
-#### Example 7: Run a single playback route with SoX effects
+#### Example 7: Run a single route with SoX effects and output to ffplay
 
 ```
 RouteA

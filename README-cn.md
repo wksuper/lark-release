@@ -2,9 +2,11 @@
 
 [English](https://gitee.com/wksuper/lark-release/blob/master/README.md) | [简体中文](https://gitee.com/wksuper/lark-release/blob/master/README-cn.md)
 
+## 介绍
+
 ***百灵鸟*** (***lark***) 是一个免费、轻量、功能强大的软件音频DSP。它提供了一种灵活可扩展的方法来设计效能高、空间占用小、延时低的音频路由，让您可以像搭积木一样构建音频系统。
 
-主要特性（至v0.13版本）：
+### 主要特性
 
 - 支持实时操作音频路由
   - 实时加载/卸载块
@@ -264,7 +266,7 @@ $ lkdb setparam RouteA blksoundtouch_0 3 1.0    # 播放速率变正常
 
 这个例子的源代码在此：[larkexample5.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample5.cpp)。
 
-#### 例7：运行一个带SoX效果器的单播放路由
+#### 例7：运行一个带SoX效果器的单路由，输出到ffplay
 
 ```
 RouteA
