@@ -53,6 +53,7 @@ enum ErrorType : int {
 
     E_GENERIC = -20,  // Route will be stopped
     E_EOF = -21,      // Route will be stopped
+    E_FADEDOUT = -22, // Route will be stopped
 
     E_EXIT = -30
 };

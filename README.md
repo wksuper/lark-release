@@ -15,7 +15,7 @@
 - Support prebuilt I/O blocks
   - file-reader, file-writer, stream-in, stream-out, alsa-capture, alsa-playback, tinyalsa-capture, tinyalsa-playback, portaudio-capture, portaudio-playback
 - Support prebuilt algorithm blocks
-  - gain, mixer, duplicator, multiplexer, interleave, de-interleave, format-adapter, delay, align, buffer
+  - gain, mixer, duplicator, multiplexer, interleave, de-interleave, format-adapter, delay, align, buffer, fade-in, fade-out
   - speexdsp algo: speex-resampler, speex-preprocessor
   - soundtouch algo: pitch, tempo, rate
   - sox-effects: vol, flanger, tremolo, echos, chorus, oops, equalizer, highpass, lowpass, etc.

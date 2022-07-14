@@ -440,6 +440,41 @@ The BlkDuplicator block duplicates the unique input to each output.
 - Pending by No Input?
   - Yes
 
+### 3.22 BlkFadeIn
+
+The BlkFadeIn block fades the audio in when route starts.
+
+- SO Name
+  - "libblkfadein.so"
+- Creation Arguments
+  - None
+- SetParameter Arguments
+  - PARAMID 1: fading time
+  - PARAMS: FADING_TIME in seconds ('double' type)
+- GetParameter Arguments
+  - None
+- Pending by No Input?
+  - Yes
+
+### 3.23 BlkFadeOut
+
+The BlkFadeOut block fades the audio out when PARAMID 2 is set.
+After fading out, the block will return E_FADEDOUT which will cause the route to be stopped automatically.
+
+- SO Name
+  - "libblkfadeout.so"
+- Creation Arguments
+  - None
+- SetParameter Arguments
+  - PARAMID 1: fading time
+  - PARAMS: FADING_TIME in seconds ('double' type)
+  - PARAMID 2: trigger fading
+  - PARAMS: None
+- GetParameter Arguments
+  - None
+- Pending by No Input?
+  - Yes
+
 ## 4 Build Your Own Block
 
 ### 4.1 Write Your Block Source Code

@@ -51,6 +51,17 @@ namespace lark {
 #define BLKLOGV(fmt, args...) KLOGV("%s: %s: " fmt, Block::RouteName(), Block::Name(), ##args)
 #define BLKBUG(fmt, args...)  KBUG("%s: %s: " fmt, Block::RouteName(), Block::Name(), ##args)
 
+
+#define BLKDELAY_PARAMID_DELAY_TIME         (1)
+#define BLKSOUNDTOUCH_PARAMID_PITCH         (1)
+#define BLKSOUNDTOUCH_PARAMID_TEMPO         (2)
+#define BLKSOUNDTOUCH_PARAMID_RATE          (3)
+#define BLKGAIN_PARAMID_GAIN                (1)
+#define BLKFADEIN_PARAMID_FADING_TIME       (1)
+#define BLKFADEOUT_PARAMID_FADING_TIME      (1)
+#define BLKFADEOUT_PARAMID_TRIGGER_FADING   (2)
+#define BLKSPEEXPREPROCESSOR_PARAMID_BYPASS (1)
+
 class Block;
 class Link;
 class RouteImpl;

@@ -15,7 +15,7 @@
 - 支持预编译的输入/输出块
   - 文件读取(file-reader), 文件写入(file-writer), 流输入(stream-in), 流输出(stream-out), alsa录音, alsa播放, tinyalsa录音, tinyalsa播放, portaudio录音, portaudio播放
 - 支持预编译的算法块
-  - 增益(gain), 混音器(mixer), 复制器(duplicator), 多路复用器(multiplexer), 声道交织器(interleave), 声道分离器(de-interleave), 格式适配器(format-adapter), 延时器(delay), 对齐(align), 缓存(buffer)
+  - 增益(gain), 混音器(mixer), 复制器(duplicator), 多路复用器(multiplexer), 声道交织(interleave), 声道分离(de-interleave), 格式适配器(format-adapter), 延时器(delay), 对齐(align), 缓存(buffer), 淡入(fade-in), 淡出(fade-out)
   - speexdsp算法: 重采样(speex-resampler), 前处理(speex-preprocessor)
   - soundtouch算法: 音调调节器(pitch), 节拍调节器(tempo), 速度调节器(rate)
   - sox效果器: 音量(vol), 镶边(flanger), 颤音(tremolo), 回音(echos), 合唱(chorus), 卡拉OK(oops), 均衡器(equalizer), 高通(highpass), 低通(lowpass), 等等
