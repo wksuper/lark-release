@@ -44,9 +44,9 @@
 安装 ***百灵鸟*** 到您的Linux机器。
 
 ```bash
-$ cd lark-release
-$ sudo ./install.sh
-$ sudo ldconfig
+cd lark-release
+sudo ./install.sh
+sudo ldconfig
 ```
 
 当您不需要 ***百灵鸟*** 时，您可以使用`sudo ./uninstall.sh`来移除它。
@@ -69,7 +69,7 @@ RouteA
 ```
 
 ```bash
-$ x86_64-linux-gnu/bin/larkexample1
+x86_64-linux-gnu/bin/larkexample1
 ```
 
 如果没错误的话，音乐文件应该开始播放了。
@@ -99,13 +99,13 @@ RouteA
 运行例2之前，需要先安装 ***PortAudio*** 库。
 
 ```bash
-$ sudo apt install libportaudio2
+sudo apt install libportaudio2
 ```
 
 运行例2：
 
 ```bash
-$ x86_64-linux-gnu/bin/larkexample2
+x86_64-linux-gnu/bin/larkexample2
 ```
 
 如果没错误的话，两个音乐文件应该开始混合播放输出了。
@@ -155,21 +155,21 @@ No fifo
 ```
 
 ```bash
-$ lkdb setparam RouteA blkgain_0 1 0 0.5    # kanr-48000_16_2.pcm左声道的输出音量变低
-$ lkdb setparam RouteA blkgain_0 1 1 0.5    # kanr-48000_16_2.pcm右声道的输出音量变低
-$ lkdb setparam RouteA blkgain_0 1 0 0.0    # kanr-48000_16_2.pcm左声道的输出静音
-$ lkdb setparam RouteA blkgain_0 1 1 0.0    # kanr-48000_16_2.pcm右声道的输出静音
+lkdb setparam RouteA blkgain_0 1 0 0.5    # kanr-48000_16_2.pcm左声道的输出音量变低
+lkdb setparam RouteA blkgain_0 1 1 0.5    # kanr-48000_16_2.pcm右声道的输出音量变低
+lkdb setparam RouteA blkgain_0 1 0 0.0    # kanr-48000_16_2.pcm左声道的输出静音
+lkdb setparam RouteA blkgain_0 1 1 0.0    # kanr-48000_16_2.pcm右声道的输出静音
 
-$ lkdb setparam RouteA blkgain_0 1 2 0.5    # pacificrim-48000_16_2.pcm左声道的输出音量变低
-$ lkdb setparam RouteA blkgain_0 1 3 0.5    # pacificrim-48000_16_2.pcm右声道的输出音量变低
-$ lkdb setparam RouteA blkgain_0 1 2 0.0    # pacificrim-48000_16_2.pcm左声道的输出静音
-$ lkdb setparam RouteA blkgain_0 1 3 0.0    # pacificrim-48000_16_2.pcm右声道的输出静音
+lkdb setparam RouteA blkgain_0 1 2 0.5    # pacificrim-48000_16_2.pcm左声道的输出音量变低
+lkdb setparam RouteA blkgain_0 1 3 0.5    # pacificrim-48000_16_2.pcm右声道的输出音量变低
+lkdb setparam RouteA blkgain_0 1 2 0.0    # pacificrim-48000_16_2.pcm左声道的输出静音
+lkdb setparam RouteA blkgain_0 1 3 0.0    # pacificrim-48000_16_2.pcm右声道的输出静音
 
-$ lkdb setparam RouteA blkgain_0 1 0 1.0    # kanr-48000_16_2.pcm左声道的输出音量恢复
-$ lkdb setparam RouteA blkgain_0 1 1 1.0    # kanr-48000_16_2.pcm右声道的输出音量恢复
+lkdb setparam RouteA blkgain_0 1 0 1.0    # kanr-48000_16_2.pcm左声道的输出音量恢复
+lkdb setparam RouteA blkgain_0 1 1 1.0    # kanr-48000_16_2.pcm右声道的输出音量恢复
 
-$ lkdb setparam RouteA blkgain_0 1 2 1.0    # pacificrim-48000_16_2.pcm左声道的输出音量恢复
-$ lkdb setparam RouteA blkgain_0 1 3 1.0    # pacificrim-48000_16_2.pcm右声道的输出音量恢复
+lkdb setparam RouteA blkgain_0 1 2 1.0    # pacificrim-48000_16_2.pcm左声道的输出音量恢复
+lkdb setparam RouteA blkgain_0 1 3 1.0    # pacificrim-48000_16_2.pcm右声道的输出音量恢复
 ```
 
 这个例子的源代码在此：[larkexample2.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample2.cpp)。
@@ -191,8 +191,8 @@ $ lkdb setparam RouteA blkgain_0 1 3 1.0    # pacificrim-48000_16_2.pcm右声道
   *            *     *            *     *           *     *                     *1<--1*                *     *         *     *               *      *            *
   **************     *            *     *           *     *                     *     ******************     *         *     *****************      ******0*******
                      *            *     *           *     *                     *                            *         *                                  v
-                     *  mixer_1   *0<--0* dummybf_0 *0<--0* speexpreprocessor_0 *                            * align_0 *                        **********0*******
-                     *(duplicator)*     *           *1<--1* (aec, denoise, ...) *                            *         *          RouteB        * deinterleave_1 *
+                     *duplicator_0*0<--0* dummybf_0 *0<--0* speexpreprocessor_0 *                            * align_0 *                        **********0*******
+                     *            *     *           *1<--1* (aec, denoise, ...) *                            *         *          RouteB        * deinterleave_1 *
                      *            *     *           *     *                     *                            *         *                        ********0**1******
                      *            *     *           *     *                     *                            *         *                                v  v
 ****************     *            *     *           *     *                     *                            *         *     ***********      **********0**1******
@@ -205,7 +205,7 @@ $ lkdb setparam RouteA blkgain_0 1 3 1.0    # pacificrim-48000_16_2.pcm右声道
 运行例3之前，需要先安装speex库。
 
 ```bash
-$ sudo apt install libspeexdsp-dev
+sudo apt install libspeexdsp-dev
 ```
 
 运行例3：
@@ -213,7 +213,7 @@ $ sudo apt install libspeexdsp-dev
 ```bash
 # 两个参数指的是alsa playback pcm name和capture pcm name。
 # 它们随着机器的不同而不同。
-$ x86_64-linux-gnu/bin/larkexample3 plughw:0,0 plughw:0,0
+x86_64-linux-gnu/bin/larkexample3 plughw:0,0 plughw:0,0
 ```
 
 如果没错误的话，播放和录音应该同时开始了。
@@ -237,14 +237,14 @@ RouteA
 运行例5之前需要先安装 ***SoundTouch*** 库和 ***PortAudio*** 库。
 
 ```bash
-$ sudo apt install libsoundtouch-dev
-$ sudo apt install libportaudio2
+sudo apt install libsoundtouch-dev
+sudo apt install libportaudio2
 ```
 
 运行例5：
 
 ```bash
-$ x86_64-linux-gnu/bin/larkexample5
+x86_64-linux-gnu/bin/larkexample5
 ```
 
 如果没错误的话，播放应该开始了。
@@ -252,16 +252,16 @@ $ x86_64-linux-gnu/bin/larkexample5
 在另一个shell里，
 
 ```bash
-$ lkdb status                                   # 显示百灵鸟状态
-$ lkdb setparam RouteA blksoundtouch_0 1 0.6    # 音调变低
-$ lkdb setparam RouteA blksoundtouch_0 1 1.8    # 音调变高
-$ lkdb setparam RouteA blksoundtouch_0 1 1.0    # 音调变正常
-$ lkdb setparam RouteA blksoundtouch_0 2 0.5    # 节拍变慢
-$ lkdb setparam RouteA blksoundtouch_0 2 2.0    # 节拍变块
-$ lkdb setparam RouteA blksoundtouch_0 2 1.0    # 节拍变正常
-$ lkdb setparam RouteA blksoundtouch_0 3 2.2    # 播放速率变快
-$ lkdb setparam RouteA blksoundtouch_0 3 0.4    # 播放速率变慢
-$ lkdb setparam RouteA blksoundtouch_0 3 1.0    # 播放速率变正常
+lkdb status                                   # 显示百灵鸟状态
+lkdb setparam RouteA blksoundtouch_0 1 0.6    # 音调变低
+lkdb setparam RouteA blksoundtouch_0 1 1.8    # 音调变高
+lkdb setparam RouteA blksoundtouch_0 1 1.0    # 音调变正常
+lkdb setparam RouteA blksoundtouch_0 2 0.5    # 节拍变慢
+lkdb setparam RouteA blksoundtouch_0 2 2.0    # 节拍变块
+lkdb setparam RouteA blksoundtouch_0 2 1.0    # 节拍变正常
+lkdb setparam RouteA blksoundtouch_0 3 2.2    # 播放速率变快
+lkdb setparam RouteA blksoundtouch_0 3 0.4    # 播放速率变慢
+lkdb setparam RouteA blksoundtouch_0 3 1.0    # 播放速率变正常
 ```
 
 这个例子的源代码在此：[larkexample5.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample5.cpp)。
@@ -285,14 +285,14 @@ RouteA
 运行例7之前需要先安装 ***SoX*** 库和 ***ffmpeg*** 。
 
 ```bash
-$ brew install sox
-$ brew install ffmpeg
+brew install sox
+brew install ffmpeg
 ```
 
 运行例7：
 
 ```bash
-$ x86_64-apple-darwin/bin/larkexample7 | ffplay -i pipe:0 -f s32le -ar 48000 -ac 2 -autoexit
+x86_64-apple-darwin/bin/larkexample7 | ffplay -i pipe:0 -f s32le -ar 48000 -ac 2 -autoexit
 ```
 
 如果没错误的话，播放应该开始了。同时在ffplay的播放画面上，音频频谱正在被实时绘制如下：
@@ -302,11 +302,11 @@ $ x86_64-apple-darwin/bin/larkexample7 | ffplay -i pipe:0 -f s32le -ar 48000 -ac
 在另一个shell里，
 
 ```bash
-$ lkdb status    # 显示百灵鸟状态，找到高通/低通滤波器的块名称分别为'blksoxeffect_highpass_0'/'blksoxeffect_lowpass_0'
+lkdb status    # 显示百灵鸟状态，找到高通/低通滤波器的块名称分别为'blksoxeffect_highpass_0'/'blksoxeffect_lowpass_0'
 ```
 
 ```bash
-$ lkdb setparam RouteA blksoxeffect_highpass_0 0 800    # 只有高于800Hz的音乐信号输出到左喇叭
+lkdb setparam RouteA blksoxeffect_highpass_0 0 800    # 只有高于800Hz的音乐信号输出到左喇叭
 ```
 
 音频频谱实时绘制如下：
@@ -316,7 +316,7 @@ $ lkdb setparam RouteA blksoxeffect_highpass_0 0 800    # 只有高于800Hz的�
 > 贴士：在ffplay的音频频谱中，红色代表左声道，绿色代表右声道。如果在某个时刻点某个频率显示为灰色，则表示左右声道在那个时刻的那个频率上能量均等。
 
 ```bash
-$ lkdb setparam RouteA blksoxeffect_lowpass_0 0 800    # 只有低于800Hz的音乐信号输出到右喇叭
+lkdb setparam RouteA blksoxeffect_lowpass_0 0 800    # 只有低于800Hz的音乐信号输出到右喇叭
 ```
 
 音频频谱实时绘制如下：
@@ -374,7 +374,7 @@ Usage:
 在一个shell里，
 
 ```bash
-$ x86_64-linux-gnu/bin/larkexample0    # 运行百灵鸟
+x86_64-linux-gnu/bin/larkexample0    # 运行百灵鸟
 ```
 
 在另一个shell里，
@@ -403,7 +403,7 @@ Deleted RouteA
 当例3运行时，
 
 ```bash
-$ lkdb status --dot | dot -Tpng -o larkexample3.png
+lkdb status --dot | dot -Tpng -o larkexample3.png
 ```
 
 路由快照会被存成文件`larkexample3.png`。
@@ -413,7 +413,7 @@ $ lkdb status --dot | dot -Tpng -o larkexample3.png
 注意：这个功能需要graphviz(dot)先安装到您的机器。
 
 ```bash
-$ sudo apt install graphviz
+sudo apt install graphviz
 ```
 
 ## 创建您自己的音频路由

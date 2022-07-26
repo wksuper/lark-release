@@ -44,9 +44,9 @@ Since ***lark*** depends on the klogging library, you should install klogging at
 Install ***lark*** on your Linux machine.
 
 ```bash
-$ cd lark-release
-$ sudo ./install.sh
-$ sudo ldconfig
+cd lark-release
+sudo ./install.sh
+sudo ldconfig
 ```
 
 You can use `sudo ./uninstall.sh` to remove ***lark*** when you don't need it.
@@ -69,7 +69,7 @@ RouteA
 ```
 
 ```bash
-$ x86_64-linux-gnu/bin/larkexample1
+x86_64-linux-gnu/bin/larkexample1
 ```
 
 If no error, the music file should be started to play.
@@ -99,13 +99,13 @@ RouteA
 To run example2, the ***PortAudio*** library is needed first.
 
 ```bash
-$ sudo apt install libportaudio2
+sudo apt install libportaudio2
 ```
 
 Run example2:
 
 ```bash
-$ x86_64-linux-gnu/bin/larkexample2
+x86_64-linux-gnu/bin/larkexample2
 ```
 
 If no error, the two files mixed music should be started to play.
@@ -155,21 +155,21 @@ No fifo
 ```
 
 ```bash
-$ lkdb setparam RouteA blkgain_0 1 0 0.5    # Output volume of kanr-48000_16_2.pcm left channel should be lower
-$ lkdb setparam RouteA blkgain_0 1 1 0.5    # Output volume of kanr-48000_16_2.pcm right channel should be lower
-$ lkdb setparam RouteA blkgain_0 1 0 0.0    # Output volume of kanr-48000_16_2.pcm left channel should be muted
-$ lkdb setparam RouteA blkgain_0 1 1 0.0    # Output volume of kanr-48000_16_2.pcm right channel should be muted
+lkdb setparam RouteA blkgain_0 1 0 0.5    # Output volume of kanr-48000_16_2.pcm left channel should be lower
+lkdb setparam RouteA blkgain_0 1 1 0.5    # Output volume of kanr-48000_16_2.pcm right channel should be lower
+lkdb setparam RouteA blkgain_0 1 0 0.0    # Output volume of kanr-48000_16_2.pcm left channel should be muted
+lkdb setparam RouteA blkgain_0 1 1 0.0    # Output volume of kanr-48000_16_2.pcm right channel should be muted
 
-$ lkdb setparam RouteA blkgain_0 1 2 0.5    # Output volume of pacificrim-48000_16_2.pcm left channel should be lower
-$ lkdb setparam RouteA blkgain_0 1 3 0.5    # Output volume of pacificrim-48000_16_2.pcm right channel should be lower
-$ lkdb setparam RouteA blkgain_0 1 2 0.0    # Output volume of pacificrim-48000_16_2.pcm left channel should be muted
-$ lkdb setparam RouteA blkgain_0 1 3 0.0    # Output volume of pacificrim-48000_16_2.pcm right channel should be muted
+lkdb setparam RouteA blkgain_0 1 2 0.5    # Output volume of pacificrim-48000_16_2.pcm left channel should be lower
+lkdb setparam RouteA blkgain_0 1 3 0.5    # Output volume of pacificrim-48000_16_2.pcm right channel should be lower
+lkdb setparam RouteA blkgain_0 1 2 0.0    # Output volume of pacificrim-48000_16_2.pcm left channel should be muted
+lkdb setparam RouteA blkgain_0 1 3 0.0    # Output volume of pacificrim-48000_16_2.pcm right channel should be muted
 
-$ lkdb setparam RouteA blkgain_0 1 0 1.0    # Output volume of kanr-48000_16_2.pcm left channel should be recovered back
-$ lkdb setparam RouteA blkgain_0 1 1 1.0    # Output volume of kanr-48000_16_2.pcm right channel should be recovered back
+lkdb setparam RouteA blkgain_0 1 0 1.0    # Output volume of kanr-48000_16_2.pcm left channel should be recovered back
+lkdb setparam RouteA blkgain_0 1 1 1.0    # Output volume of kanr-48000_16_2.pcm right channel should be recovered back
 
-$ lkdb setparam RouteA blkgain_0 1 2 1.0    # Output volume of pacificrim-48000_16_2.pcm left channel should be recovered back
-$ lkdb setparam RouteA blkgain_0 1 3 1.0    # Output volume of pacificrim-48000_16_2.pcm right channel should be recovered back
+lkdb setparam RouteA blkgain_0 1 2 1.0    # Output volume of pacificrim-48000_16_2.pcm left channel should be recovered back
+lkdb setparam RouteA blkgain_0 1 3 1.0    # Output volume of pacificrim-48000_16_2.pcm right channel should be recovered back
 ```
 
 The source code of this example is shown in [larkexample2.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample2.cpp).
@@ -191,8 +191,8 @@ The source code of this example is shown in [larkexample2.cpp](https://gitee.com
   *            *     *            *     *           *     *                     *1<--1*                *     *         *     *               *      *            *
   **************     *            *     *           *     *                     *     ******************     *         *     *****************      ******0*******
                      *            *     *           *     *                     *                            *         *                                  v
-                     *  mixer_1   *0<--0* dummybf_0 *0<--0* speexpreprocessor_0 *                            * align_0 *                        **********0*******
-                     *(duplicator)*     *           *1<--1* (aec, denoise, ...) *                            *         *          RouteB        * deinterleave_1 *
+                     *duplicator_0*0<--0* dummybf_0 *0<--0* speexpreprocessor_0 *                            * align_0 *                        **********0*******
+                     *            *     *           *1<--1* (aec, denoise, ...) *                            *         *          RouteB        * deinterleave_1 *
                      *            *     *           *     *                     *                            *         *                        ********0**1******
                      *            *     *           *     *                     *                            *         *                                v  v
 ****************     *            *     *           *     *                     *                            *         *     ***********      **********0**1******
@@ -205,7 +205,7 @@ The source code of this example is shown in [larkexample2.cpp](https://gitee.com
 To run example3, the speex libaray is needed first.
 
 ```bash
-$ sudo apt install libspeexdsp-dev
+sudo apt install libspeexdsp-dev
 ```
 
 Run example3:
@@ -213,7 +213,7 @@ Run example3:
 ```bash
 # The two arguments are the alsa playback pcm name and capture pcm name.
 # They vary machine by machine.
-$ x86_64-linux-gnu/bin/larkexample3 plughw:0,0 plughw:0,0
+x86_64-linux-gnu/bin/larkexample3 plughw:0,0 plughw:0,0
 ```
 
 If no error, playback and capture will be started.
@@ -237,14 +237,14 @@ RouteA
 To run example5, the ***SoundTouch*** library and the ***PortAudio*** library are needed first.
 
 ```bash
-$ sudo apt install libsoundtouch-dev
-$ sudo apt install libportaudio2
+sudo apt install libsoundtouch-dev
+sudo apt install libportaudio2
 ```
 
 Run example5:
 
 ```bash
-$ x86_64-linux-gnu/bin/larkexample5
+x86_64-linux-gnu/bin/larkexample5
 ```
 
 If no error, playback will be started.
@@ -252,16 +252,16 @@ If no error, playback will be started.
 In the other shell,
 
 ```bash
-$ lkdb status                                   # Shows lark status
-$ lkdb setparam RouteA blksoundtouch_0 1 0.6    # Sound pitch goes lower
-$ lkdb setparam RouteA blksoundtouch_0 1 1.8    # Sound pitch goes higher
-$ lkdb setparam RouteA blksoundtouch_0 1 1.0    # Sound pitch goes normal
-$ lkdb setparam RouteA blksoundtouch_0 2 0.5    # Sound tempo goes slower
-$ lkdb setparam RouteA blksoundtouch_0 2 2.0    # Sound tempo goes faster
-$ lkdb setparam RouteA blksoundtouch_0 2 1.0    # Sound tempo goes normal
-$ lkdb setparam RouteA blksoundtouch_0 3 2.2    # Sound rate goes faster
-$ lkdb setparam RouteA blksoundtouch_0 3 0.4    # Sound rate goes slower
-$ lkdb setparam RouteA blksoundtouch_0 3 1.0    # Sound rate goes normal
+lkdb status                                   # Shows lark status
+lkdb setparam RouteA blksoundtouch_0 1 0.6    # Sound pitch goes lower
+lkdb setparam RouteA blksoundtouch_0 1 1.8    # Sound pitch goes higher
+lkdb setparam RouteA blksoundtouch_0 1 1.0    # Sound pitch goes normal
+lkdb setparam RouteA blksoundtouch_0 2 0.5    # Sound tempo goes slower
+lkdb setparam RouteA blksoundtouch_0 2 2.0    # Sound tempo goes faster
+lkdb setparam RouteA blksoundtouch_0 2 1.0    # Sound tempo goes normal
+lkdb setparam RouteA blksoundtouch_0 3 2.2    # Sound rate goes faster
+lkdb setparam RouteA blksoundtouch_0 3 0.4    # Sound rate goes slower
+lkdb setparam RouteA blksoundtouch_0 3 1.0    # Sound rate goes normal
 ```
 
 The source code of this example is shown in [larkexample5.cpp](https://gitee.com/wksuper/lark-release/blob/master/examples/larkexample5.cpp).
@@ -285,14 +285,14 @@ RouteA
 To run example7, the ***SoX*** library and ***ffmpeg*** are needed first.
 
 ```bash
-$ brew install sox
-$ brew install ffmpeg
+brew install sox
+brew install ffmpeg
 ```
 
 Run example7:
 
 ```bash
-$ x86_64-apple-darwin/bin/larkexample7 | ffplay -i pipe:0 -f s32le -ar 48000 -ac 2 -autoexit
+x86_64-apple-darwin/bin/larkexample7 | ffplay -i pipe:0 -f s32le -ar 48000 -ac 2 -autoexit
 ```
 
 If no error, playback will be started, and on the ffplay screen, audio spectrum is being drawed like this.
@@ -302,11 +302,11 @@ If no error, playback will be started, and on the ffplay screen, audio spectrum 
 In the other shell,
 
 ```bash
-$ lkdb status    # Shows lark status. Found that the name of higpass/lowpass filter block is 'blksoxeffect_highpass_0'/'blksoxeffect_lowpass_0' respectively.
+lkdb status    # Shows lark status. Found that the name of higpass/lowpass filter block is 'blksoxeffect_highpass_0'/'blksoxeffect_lowpass_0' respectively.
 ```
 
 ```bash
-$ lkdb setparam RouteA blksoxeffect_highpass_0 0 800    # Only higher than 800Hz music signals go to left speaker
+lkdb setparam RouteA blksoxeffect_highpass_0 0 800    # Only higher than 800Hz music signals go to left speaker
 ```
 
 The audio spectrum is being drawed like this.
@@ -316,7 +316,7 @@ The audio spectrum is being drawed like this.
 > Tips: In ffplay spectrum, red means left channel and green means right channel. If grey is displayed on a certain frequency at a certain time, it means the power of left channel and of right channel on that frequency at that time is same.
 
 ```bash
-$ lkdb setparam RouteA blksoxeffect_lowpass_0 0 800    # Only lower than 800Hz music signals go to right speaker
+lkdb setparam RouteA blksoxeffect_lowpass_0 0 800    # Only lower than 800Hz music signals go to right speaker
 ```
 
 The audio spectrum is being drawed like this.
@@ -374,7 +374,7 @@ Besides real-time printing status, setting parameters shown in the examples abov
 In one shell,
 
 ```bash
-$ x86_64-linux-gnu/bin/larkexample0    # Run lark
+x86_64-linux-gnu/bin/larkexample0    # Run lark
 ```
 
 In the other shell,
@@ -403,7 +403,7 @@ The source code of this example is shown in [larkexample0.cpp](https://gitee.com
 While running example3,
 
 ```bash
-$ lkdb status --dot | dot -Tpng -o larkexample3.png
+lkdb status --dot | dot -Tpng -o larkexample3.png
 ```
 
 The routes snapshot will be saved to `larkexample3.png`.
@@ -413,7 +413,7 @@ The routes snapshot will be saved to `larkexample3.png`.
 Note: This requires graphviz(dot) to be installed on your machine.
 
 ```bash
-$ sudo apt install graphviz
+sudo apt install graphviz
 ```
 
 ## Make Your Own Audio Route(s)

@@ -295,7 +295,7 @@ The data from the input endpoint index N will go to the output endpoint with the
 
 ### 3.14 BlkSpeexResampler
 
-The BlkSpeexResampler block resample its input endpoints(one channel per endpoint) to its output endpoints(one channel per endpoint).
+The BlkSpeexResampler block resample its input endpoint(s) to its output endpoint(s).
 All the input endpoints should be at the same sampling rate. The input rate is decided by its link linked.
 All the output endpoints should be at the same sampling rate. The output rate is decided by its link linked.
 This block depends on `libspeexdsp.so`.
@@ -303,9 +303,13 @@ This block depends on `libspeexdsp.so`.
 - SO Name
   - "libblkspeexresampler.so"
 - Creation Arguments
-  - None
+  - MODE - "interleave"|"non-interleave"
+    - interleave mode only accepts 1 input endpoint and 1 output endpoint
+    - non-interleave mode accepts multiple input endpoints(1ch each) and multiple output endpoints(1ch each)
+  - QUALITY - [0,1,...,10] where 0 has poor quality and 10 has very high quality
 - SetParameter Arguments
-  - None
+  - PARAMID 1: set rate
+  - PARAMS: INRATE OUTRATE
 - GetParameter Arguments
   - None
 - Pending by No Input?

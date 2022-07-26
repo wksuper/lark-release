@@ -58,7 +58,8 @@ private:
     const unsigned int playbackRate = 48000;
     const unsigned int captureRate = 16000;
     const lark::SampleFormat format = lark::SampleFormat::S16_LE;
-    const unsigned int chNum = 2;
+    const unsigned int playbackChNum = 2;
+    const unsigned int micChNum = 2;
     const unsigned int frameDuration_ms = 20;
     const lark::samples_t playbackFrameSizeInSamples = frameDuration_ms * playbackRate / 1000;
     const lark::samples_t captureFrameSizeInSamples = frameDuration_ms * captureRate / 1000;
@@ -68,7 +69,7 @@ int MyDsp::SetupRoutes()
 {
     lark::FIFO *fifo = lark::Lark::Instance().NewFIFO(
                                 playbackRate,
-                                lark::SamplesToBytes(format, chNum, 1),
+                                lark::SamplesToBytes(format, playbackChNum, 1),
                                 playbackFrameSizeInSamples * 4);
     if (!fifo) {
         KLOGE("Failed to new a FIFO");
@@ -127,7 +128,10 @@ int MyDsp::SetupRoutes()
     }
 
     soFileName = "libblkspeexresampler.so";
-    lark::Block *blkSpeexResampler = m_captureRoute->NewBlock(soFileName, false, false);
+    args.clear();
+    args.push_back("non-interleave"); // interleave or non-interleave
+    args.push_back("10"); // quality
+    lark::Block *blkSpeexResampler = m_captureRoute->NewBlock(soFileName, false, false, args);
     if (!blkSpeexResampler) {
         KLOGE("Failed to new a block from %s", soFileName);
         return -1;
@@ -135,10 +139,12 @@ int MyDsp::SetupRoutes()
 
     soFileName = "libblkmixer.so";
     args.clear();
-    args.push_back("0 0.5");
-    args.push_back("1 0.5");
-    lark::Block *blkMixerRef = m_captureRoute->NewBlock(soFileName, false, false, args);
-    if (!blkMixerRef) {
+    float coef = 1.0 / playbackChNum;
+    for (unsigned int ch = 0; ch < playbackChNum; ++ch) {
+        args.push_back(std::to_string(ch) + " " + std::to_string(coef));
+    }
+    lark::Block *blkMixer = m_captureRoute->NewBlock(soFileName, false, false, args);
+    if (!blkMixer) {
         KLOGE("Failed to new a block from %s", soFileName);
         return -1;
     }
@@ -157,9 +163,9 @@ int MyDsp::SetupRoutes()
         return -1;
     }
 
-    soFileName = "libblkmixer.so";
-    lark::Block *blkMixer = m_captureRoute->NewBlock(soFileName, false, false);
-    if (!blkMixer) {
+    soFileName = "libblkduplicator.so";
+    lark::Block *blkDuplicator = m_captureRoute->NewBlock(soFileName, false, false);
+    if (!blkDuplicator) {
         KLOGE("Failed to new a block from %s", soFileName);
         return -1;
     }
@@ -182,43 +188,39 @@ int MyDsp::SetupRoutes()
 
     // 3. Create RouteB's links
 
-    if (!m_captureRoute->NewLink(captureRate, format, chNum, captureFrameSizeInSamples, blkAlsaCapture, 0, blkAlign, 0)) {
+    if (!m_captureRoute->NewLink(captureRate, format, micChNum, captureFrameSizeInSamples, blkAlsaCapture, 0, blkAlign, 0)) {
         KLOGE("Failed to new a link");
         return -1;
     }
-    if (!m_captureRoute->NewLink(captureRate, format, chNum, captureFrameSizeInSamples, blkAlign, 0, blkDeinterleave, 0)) {
+    if (!m_captureRoute->NewLink(captureRate, format, micChNum, captureFrameSizeInSamples, blkAlign, 0, blkDeinterleave, 0)) {
         KLOGE("Failed to new a link");
         return -1;
     }
-    if (!m_captureRoute->NewLink(captureRate, format, 1, captureFrameSizeInSamples, blkDeinterleave, 0, blkPreprocessor, 0)) {
+    for (unsigned int ch = 0; ch < playbackChNum; ++ch) {
+        if (!m_captureRoute->NewLink(playbackRate, format, 1, playbackFrameSizeInSamples, blkDeinterleaveForStreamIn, ch, blkSpeexResampler, ch)) {
+            KLOGE("Failed to new a link");
+            return -1;
+        }
+        if (!m_captureRoute->NewLink(captureRate, format, 1, captureFrameSizeInSamples, blkSpeexResampler, ch, blkMixer, ch)) {
+            KLOGE("Failed to new a link");
+            return -1;
+        }
+    }
+    for (unsigned int ch = 0; ch < micChNum; ++ch) {
+        if (!m_captureRoute->NewLink(captureRate, format, 1, captureFrameSizeInSamples, blkDeinterleave, ch, blkPreprocessor, ch)) {
+            KLOGE("Failed to new a link");
+            return -1;
+        }
+        if (!m_captureRoute->NewLink(captureRate, format, 1, captureFrameSizeInSamples, blkPreprocessor, ch, blkBF, ch)) {
+            KLOGE("Failed to new a link");
+            return -1;
+        }
+    }
+    if (!m_captureRoute->NewLink(playbackRate, format, playbackChNum, playbackFrameSizeInSamples, blkStreamIn, 0, blkDeinterleaveForStreamIn, 0)) {
         KLOGE("Failed to new a link");
         return -1;
     }
-    if (!m_captureRoute->NewLink(captureRate, format, 1, captureFrameSizeInSamples, blkDeinterleave, 1, blkPreprocessor, 1)) {
-        KLOGE("Failed to new a link");
-        return -1;
-    }
-    if (!m_captureRoute->NewLink(playbackRate, format, chNum, playbackFrameSizeInSamples, blkStreamIn, 0, blkDeinterleaveForStreamIn, 0)) {
-        KLOGE("Failed to new a link");
-        return -1;
-    }
-    if (!m_captureRoute->NewLink(playbackRate, format, 1, playbackFrameSizeInSamples, blkDeinterleaveForStreamIn, 0, blkSpeexResampler, 0)) {
-        KLOGE("Failed to new a link");
-        return -1;
-    }
-    if (!m_captureRoute->NewLink(playbackRate, format, 1, playbackFrameSizeInSamples, blkDeinterleaveForStreamIn, 1, blkSpeexResampler, 1)) {
-        KLOGE("Failed to new a link");
-        return -1;
-    }
-    if (!m_captureRoute->NewLink(captureRate, format, 1, captureFrameSizeInSamples, blkSpeexResampler, 0, blkMixerRef, 0)) {
-        KLOGE("Failed to new a link");
-        return -1;
-    }
-    if (!m_captureRoute->NewLink(captureRate, format, 1, captureFrameSizeInSamples, blkSpeexResampler, 1, blkMixerRef, 1)) {
-        KLOGE("Failed to new a link");
-        return -1;
-    }
-    if (!m_captureRoute->NewLink(captureRate, format, 1, captureFrameSizeInSamples, blkMixerRef, 0, blkAlign, 1)) {
+    if (!m_captureRoute->NewLink(captureRate, format, 1, captureFrameSizeInSamples, blkMixer, 0, blkAlign, 1)) {
         KLOGE("Failed to new a link");
         return -1;
     }
@@ -226,23 +228,15 @@ int MyDsp::SetupRoutes()
         KLOGE("Failed to new a link");
         return -1;
     }
-    if (!m_captureRoute->NewLink(captureRate, format, 1, captureFrameSizeInSamples, blkPreprocessor, 0, blkBF, 0)) {
+    if (!m_captureRoute->NewLink(captureRate, format, 1, captureFrameSizeInSamples, blkBF, 0, blkDuplicator, 0)) {
         KLOGE("Failed to new a link");
         return -1;
     }
-    if (!m_captureRoute->NewLink(captureRate, format, 1, captureFrameSizeInSamples, blkPreprocessor, 1, blkBF, 1)) {
+    if (!m_captureRoute->NewLink(captureRate, format, 1, captureFrameSizeInSamples, blkDuplicator, 0, blkKWD, 0)) {
         KLOGE("Failed to new a link");
         return -1;
     }
-    if (!m_captureRoute->NewLink(captureRate, format, 1, captureFrameSizeInSamples, blkBF, 0, blkMixer, 0)) {
-        KLOGE("Failed to new a link");
-        return -1;
-    }
-    if (!m_captureRoute->NewLink(captureRate, format, 1, captureFrameSizeInSamples, blkMixer, 0, blkKWD, 0)) {
-        KLOGE("Failed to new a link");
-        return -1;
-    }
-    if (!m_captureRoute->NewLink(captureRate, format, 1, captureFrameSizeInSamples, blkMixer, 1, blkFileWriter, 0)) {
+    if (!m_captureRoute->NewLink(captureRate, format, 1, captureFrameSizeInSamples, blkDuplicator, 1, blkFileWriter, 0)) {
         KLOGE("Failed to new a link");
         return -1;
     }
@@ -285,11 +279,11 @@ int MyDsp::SetupRoutes()
     }
 
     // 6. Create RouteA's links
-    if (!m_playbackRoute->NewLink(playbackRate, format, chNum, playbackFrameSizeInSamples, blkFileReader, 0, blkAlsaPlayback, 0)) {
+    if (!m_playbackRoute->NewLink(playbackRate, format, playbackChNum, playbackFrameSizeInSamples, blkFileReader, 0, blkAlsaPlayback, 0)) {
         KLOGE("Failed to new a link");
         return -1;
     }
-    if (!m_playbackRoute->NewLink(playbackRate, format, chNum, playbackFrameSizeInSamples, blkAlsaPlayback, 0, blkStreamOut, 0)) {
+    if (!m_playbackRoute->NewLink(playbackRate, format, playbackChNum, playbackFrameSizeInSamples, blkAlsaPlayback, 0, blkStreamOut, 0)) {
         KLOGE("Failed to new a link");
         return -1;
     }

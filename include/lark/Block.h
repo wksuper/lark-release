@@ -61,6 +61,7 @@ namespace lark {
 #define BLKFADEOUT_PARAMID_FADING_TIME      (1)
 #define BLKFADEOUT_PARAMID_TRIGGER_FADING   (2)
 #define BLKSPEEXPREPROCESSOR_PARAMID_BYPASS (1)
+#define BLKSPEEXRESAMPLER_PARAMID_RATE      (1)
 
 class Block;
 class Link;
