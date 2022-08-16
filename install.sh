@@ -1,16 +1,6 @@
 #!/bin/bash
 
-PREFIX=/usr/local
-BINDIR=$PREFIX/bin
-LIBDIR=$PREFIX/lib
-INCDIR=$PREFIX/include
-LKINCDIR=$INCDIR/lark
-
-if [ "$(uname -s)" = "Darwin" ]; then
-    ARCH=x86_64-apple-darwin
-elif [ "$(uname -s)" = "Linux" ]; then
-    ARCH=x86_64-linux-gnu
-fi
+source ./env.sh
 
 # exe lkdb
 install $ARCH/bin/lkdb $BINDIR/

@@ -29,7 +29,9 @@
   - Dump log to a file
   - Dump each block's audio data to files
 - Cross platform
-  - Linux (x86_64), MacOS (x86_64), Android (aarch64)
+  - Linux (x86_64, aarch64, armv7l)
+  - MacOS (x86_64)
+  - Android (aarch64)
 
 ## Get Started
 

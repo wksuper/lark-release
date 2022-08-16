@@ -29,7 +29,9 @@
   - 转储日志到文件
   - 转储各个块的音频数据到文件
 - 跨平台
-  - Linux (x86_64), MacOS (x86_64), Android (aarch64)
+  - Linux (x86_64, aarch64, armv7l)
+  - MacOS (x86_64)
+  - Android (aarch64)
 
 ## 开始吧
 
